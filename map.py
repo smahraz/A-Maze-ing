@@ -27,6 +27,11 @@ class _Cell:
         self.north = _Wall()
         self.south = _Wall()
 
+        self.above_cell: _Cell | None = None
+        self.below_cell: _Cell | None = None
+        self.left_cell: _Cell | None = None
+        self.right_cell: _Cell | None = None
+
     def __str__(self) -> str:
         return (
             "Cell ("
@@ -39,11 +44,15 @@ class _Cell:
     def __repr__(self) -> str:
         return self.__str__()
 
-    def right_cell(self, other: "_Cell") -> None:
+    def next_in_row(self, other: "_Cell") -> None:
         self.east = other.west
+        self.right_cell = other
+        other.left_cell = self
 
-    def bottom_cell(self, other: "_Cell") -> None:
+    def next_in_column(self, other: "_Cell") -> None:
         self.south = other.north
+        self.below_cell = other
+        other.above_cell = self
 
 
 class Map:
@@ -73,12 +82,12 @@ class Map:
                 prev = cell
 
         for row in self.map:
-            set_walls(row, lambda prev, cell: prev.right_cell(cell))
+            set_walls(row, lambda prev, cell: prev.next_in_row(cell))
 
         for column in range(self.width):
             set_walls(
                 column_to_list(column),
-                lambda prev, cell: prev.bottom_cell(cell)
+                lambda prev, cell: prev.next_in_column(cell)
             )
 
     def open_north(self, column: int, row: int) -> None:
