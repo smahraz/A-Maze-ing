@@ -59,18 +59,6 @@ class Map:
         self.map = [[_Cell() for _ in range(width)] for _ in range(height)]
         self._set_walls()
 
-    def open_north(self, column: int, row: int) -> None:
-        self.map[row][column].north.open()
-
-    def open_south(self, column: int, row: int) -> None:
-        self.map[row][column].south.open()
-
-    def open_west(self, column: int, row: int) -> None:
-        self.map[row][column].west.open()
-
-    def open_east(self, column: int, row: int) -> None:
-        self.map[row][column].east.open()
-
     def _set_walls(self) -> None:
         def column_to_list(column: int) -> list[_Cell]:
             return [row[column] for row in self.map]
@@ -92,6 +80,18 @@ class Map:
                 column_to_list(column),
                 lambda prev, cell: prev.bottom_cell(cell)
             )
+
+    def open_north(self, column: int, row: int) -> None:
+        self.map[row][column].north.open()
+
+    def open_south(self, column: int, row: int) -> None:
+        self.map[row][column].south.open()
+
+    def open_west(self, column: int, row: int) -> None:
+        self.map[row][column].west.open()
+
+    def open_east(self, column: int, row: int) -> None:
+        self.map[row][column].east.open()
 
     def encode(self) -> str:
         output_ = ""
