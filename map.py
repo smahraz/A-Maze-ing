@@ -8,6 +8,7 @@ class _Wall:
         self.id = self.__class__.id
         self.is_closed = True
         self.new_id()
+        self.is_protected: bool = False
 
     def __str__(self) -> str:
         return str(self.id)
@@ -21,24 +22,29 @@ class _Wall:
 
 
 class _Cell:
-    def __init__(self) -> None:
+    def __init__(self, x: int, y: int) -> None:
         self.west = _Wall()
         self.east = _Wall()
         self.north = _Wall()
         self.south = _Wall()
+
+        self.x = x
+        self.y = y
 
         self.above_cell: _Cell | None = None
         self.below_cell: _Cell | None = None
         self.left_cell: _Cell | None = None
         self.right_cell: _Cell | None = None
 
+        self.is_protected: bool = False
+
     def __str__(self) -> str:
         return (
             "Cell ("
-            f"w: {self.west}, "
-            f"e: {self.east}, "
-            f"n: {self.north}, "
-            f"s: {self.south})"
+            f"w: {self.west} {'P' if self.west.is_protected else ''}, "
+            f"e: {self.east} {'P' if self.east.is_protected else ''}, "
+            f"n: {self.north} {'P' if self.north.is_protected else ''}, "
+            f"s: {self.south} {'P' if self.south.is_protected else ''})"
         )
 
     def __repr__(self) -> str:
@@ -54,6 +60,13 @@ class _Cell:
         self.below_cell = other
         other.above_cell = self
 
+    def protect(self) -> None:
+        self.west.is_protected = True
+        self.south.is_protected = True
+        self.north.is_protected = True
+        self.east.is_protected = True
+        self.is_protected = True
+
 
 class Map:
     def __init__(self, width: int, height: int) -> None:
@@ -65,7 +78,7 @@ class Map:
         self.height = height
         self.width = width
 
-        self.map = [[_Cell() for _ in range(width)] for _ in range(height)]
+        self.map = [[_Cell(x, y) for x in range(width)] for y in range(height)]
         self._set_walls()
 
     def _set_walls(self) -> None:
@@ -90,17 +103,21 @@ class Map:
                 lambda prev, cell: prev.next_in_column(cell)
             )
 
-    def open_north(self, column: int, row: int) -> None:
-        self.map[row][column].north.open()
+    def open_north(self, x: int, y: int) -> None:
+        assert not self.map[y][x].north.is_protected, "the wall is protected"
+        self.map[y][x].north.open()
 
-    def open_south(self, column: int, row: int) -> None:
-        self.map[row][column].south.open()
+    def open_south(self, x: int, y: int) -> None:
+        assert not self.map[y][x].south.is_protected, "the wall is protected"
+        self.map[y][x].south.open()
 
-    def open_west(self, column: int, row: int) -> None:
-        self.map[row][column].west.open()
+    def open_west(self, x: int, y: int) -> None:
+        assert not self.map[y][x].west.is_protected, "the wall is protected"
+        self.map[y][x].west.open()
 
-    def open_east(self, column: int, row: int) -> None:
-        self.map[row][column].east.open()
+    def open_east(self, x: int, y: int) -> None:
+        assert not self.map[y][x].east.is_protected, "the wall is protected"
+        self.map[y][x].east.open()
 
     def encode(self) -> str:
         output_ = ""
@@ -113,7 +130,10 @@ class Map:
                 nibble |= cell.west.is_closed << 3
                 output_ += hex(nibble)[2:]
             output_ += "\n"
-        return output_
+        return output_[:-1]
+
+    def protect_cell(self, x: int, y: int) -> None:
+        self.map[y][x].protect()
 
 
 if __name__ == "__main__":
