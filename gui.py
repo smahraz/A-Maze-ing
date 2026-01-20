@@ -54,14 +54,16 @@ class Image:
 
 
 class Gui:
-    border = 50
-    cell_size = 20
+    border = 30
+    cell_size = 30
     stroke = 3
 
     def __init__(self, map: Map):
         self.map = map
-        self.width = self.cell_size * map.width + self.border * 2 + self.stroke
-        self.height = self.cell_size * map.height + self.border * 2 + self.stroke
+        self.width = self.cell_size * map.width\
+            + self.border * 2 + self.stroke
+        self.height = self.cell_size * map.height\
+            + self.border * 2 + self.stroke
 
         self._mlx = Mlx()
         self._mlx_ptr = None
@@ -153,6 +155,25 @@ class Gui:
                         self._wall_color
                     )
 
+    def clear_wall(self, x, y, dir: str):
+        offset = self.cell_size
+        if dir == 'E':
+            for stroke in range(self.stroke):
+                for length in range(self.cell_size - self.stroke):
+                    self._maze.put_pixel(
+                        x * self.cell_size + stroke + offset,
+                        y * self.cell_size + length + self.stroke,
+                        self._bg_color
+                    )
+        if dir == 'S':
+            for stroke in range(self.stroke):
+                for length in range(self.cell_size - self.stroke):
+                    self._maze.put_pixel(
+                        x * self.cell_size + length + self.stroke,
+                        y * self.cell_size + stroke + offset,
+                        self._bg_color
+                    )
+
     def render_cell(self, x, y, cell: _Cell):
         if x == 0:
             self.render_wall(0, y, 'W')
@@ -160,11 +181,14 @@ class Gui:
             self.render_wall(x, 0, 'N')
         if cell.east.is_closed or x == self.map.width - 1:
             self.render_wall(x, y, 'E')
+        else:
+            self.clear_wall(x, y, 'E')
         if cell.south.is_closed or y == self.map.height - 1:
             self.render_wall(x, y, 'S')
+        else:
+            self.clear_wall(x, y, 'S')
 
     def render_maze(self):
-        self._maze.clear()
         for y, row in enumerate(self.map.map):
             for x, cell in enumerate(row):
                 self.render_cell(x, y, cell)
@@ -176,10 +200,9 @@ class Gui:
             self.border, self.border
         )
 
-    def display(self, map: Map):
+    def display(self):
         if not self._window:
             self.init_mlx()
-        self.map = map
         self.render_bg()
         self.render_maze()
         self._mlx.mlx_loop(self._mlx_ptr)
