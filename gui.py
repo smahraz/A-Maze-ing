@@ -174,24 +174,24 @@ class Gui:
                         self._bg_color
                     )
 
-    def render_cell(self, x, y, cell: _Cell):
-        if x == 0:
-            self.render_wall(0, y, 'W')
-        if y == 0:
-            self.render_wall(x, 0, 'N')
-        if cell.east.is_closed or x == self.map.width - 1:
-            self.render_wall(x, y, 'E')
+    def render_cell(self, cell: _Cell):
+        if cell.x == 0:
+            self.render_wall(0, cell.y, 'W')
+        if cell.y == 0:
+            self.render_wall(cell.x, 0, 'N')
+        if cell.east.is_closed or cell.x == self.map.width - 1:
+            self.render_wall(cell.x, cell.y, 'E')
         else:
-            self.clear_wall(x, y, 'E')
-        if cell.south.is_closed or y == self.map.height - 1:
-            self.render_wall(x, y, 'S')
+            self.clear_wall(cell.x, cell.y, 'E')
+        if cell.south.is_closed or cell.y == self.map.height - 1:
+            self.render_wall(cell.x, cell.y, 'S')
         else:
-            self.clear_wall(x, y, 'S')
+            self.clear_wall(cell.x, cell.y, 'S')
 
     def render_maze(self):
-        for y, row in enumerate(self.map.map):
-            for x, cell in enumerate(row):
-                self.render_cell(x, y, cell)
+        for row in self.map.map:
+            for cell in row:
+                self.render_cell(cell)
 
         self._mlx.mlx_put_image_to_window(
             self._mlx_ptr,
