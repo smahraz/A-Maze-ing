@@ -271,9 +271,3 @@ class Gui:
         self._mlx.mlx_key_hook(self._window, self.key_hook, None)
         self._mlx.mlx_expose_hook(self._window, self.expose_hook, None)
         self._mlx.mlx_loop(self._mlx_ptr)
-
-
-if __name__ == "__main__":
-    map = Map(20, 10)
-    gui = Gui(map)
-    gui.display()
