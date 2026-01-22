@@ -1,0 +1,15 @@
+## Default config file for A-Maze-ing.
+##
+## Mandatory Keys:
+WIDTH=20
+HEIGHT=15
+ENTRY=0,0
+EXIT=19,14
+OUTPUT_FILE=maze.txt
+PERFECT=True
+##
+##
+## Optional Keys:
+SEED=1234567
+ALGORITHM=DFS
+INTERFACE=gui
