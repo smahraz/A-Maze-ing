@@ -3,16 +3,17 @@ from map import Map, _Cell
 
 
 class Color:
-    def __init__(self, red: int, green: int, blue: int):
+    def __init__(self, red: int, green: int, blue: int,  alpha: int = 255):
         self.red = red
         self.green = green
         self.blue = blue
+        self.alpha = alpha
 
     def big(self) -> int:
-        return 255 << 24 | self.red << 16 | self.green << 8 | self.blue
+        return self.alpha << 24 | self.red << 16 | self.green << 8 | self.blue
 
     def little(self) -> int:
-        return self.blue << 24 | self.green << 16 | self.red << 8 | 255
+        return self.blue << 24 | self.green << 16 | self.red << 8 | self.alpha
 
 
 class Image:
@@ -30,7 +31,7 @@ class Image:
 
     def _get_data(self) -> tuple[memoryview, int, int, int]:
         if not self.data:
-            self.data = self._mlx.mlx_get_data_addr(self.image)
+            return self._mlx.mlx_get_data_addr(self.image)
         return self.data
 
     def put_pixel(self, x: int, y: int, color: Color):
@@ -50,7 +51,7 @@ class Image:
     def clear(self):
         for x in range(self.width):
             for y in range(self.height):
-                self.put_pixel(x, y, Color(0, 0, 0))
+                self.put_pixel(x, y, Color(0, 0, 0, 0))
 
 
 class Gui:
@@ -94,12 +95,6 @@ class Gui:
     def init_mlx(self):
         if not self._mlx_ptr:
             self._mlx_ptr = self._mlx.mlx_init()
-        self._window = self._mlx.mlx_new_window(
-            self._mlx_ptr,
-            self.width,
-            self.height,
-            "A-Maze-ing"
-        )
 
         self._maze = Image(
             self._mlx,
@@ -112,6 +107,15 @@ class Gui:
             self._mlx_ptr,
             self.width,
             self.height
+        )
+        self._maze.clear()
+        self._bg.clear()
+
+        self._window = self._mlx.mlx_new_window(
+            self._mlx_ptr,
+            self.width,
+            self.height,
+            "A-Maze-ing"
         )
 
     def render_bg(self):
@@ -267,3 +271,9 @@ class Gui:
         self._mlx.mlx_key_hook(self._window, self.key_hook, None)
         self._mlx.mlx_expose_hook(self._window, self.expose_hook, None)
         self._mlx.mlx_loop(self._mlx_ptr)
+
+
+if __name__ == "__main__":
+    map = Map(20, 10)
+    gui = Gui(map)
+    gui.display()
