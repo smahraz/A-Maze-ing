@@ -81,8 +81,15 @@ class Gui:
             255
         )
 
-    def quit_gui(self, param):
+    def quit_gui(self, param=None):
         self._mlx.mlx_loop_exit(self._mlx_ptr)
+
+    def cell_gen(self):
+        def cells(map: list[list[_Cell]]):
+            for row in map:
+                for cell in row:
+                    yield cell
+        return cells(self.map.map)
 
     def init_mlx(self):
         if not self._mlx_ptr:
@@ -93,8 +100,6 @@ class Gui:
             self.height,
             "A-Maze-ing"
         )
-
-        self._mlx.mlx_hook(self._window, 33, 0, self.quit_gui, None)
 
         self._maze = Image(
             self._mlx,
@@ -120,78 +125,123 @@ class Gui:
             0, 0
         )
 
-    def render_wall(self, x, y, dir: str):
+    def render_wall(self, x, y, dir: str, clear: bool = False):
+        color = self._wall_color if not clear else self._bg_color
         offset = self.cell_size
-        if dir == 'E':
-            for stroke in range(self.stroke):
-                for length in range(self.cell_size + self.stroke):
-                    self._maze.put_pixel(
-                        x * self.cell_size + stroke + offset,
-                        y * self.cell_size + length,
-                        self._wall_color
-                    )
-        if dir == 'S':
-            for stroke in range(self.stroke):
-                for length in range(self.cell_size + self.stroke):
-                    self._maze.put_pixel(
-                        x * self.cell_size + length,
-                        y * self.cell_size + stroke + offset,
-                        self._wall_color
-                    )
-        if dir == 'N':
-            for stroke in range(self.stroke):
-                for length in range(self.cell_size + self.stroke):
-                    self._maze.put_pixel(
-                        x * self.cell_size + length - self.stroke,
-                        y * self.cell_size + stroke,
-                        self._wall_color
-                    )
-        if dir == 'W':
-            for stroke in range(self.stroke):
-                for length in range(self.cell_size + self.stroke):
-                    self._maze.put_pixel(
-                        x * self.cell_size + stroke,
-                        y * self.cell_size + length - self.stroke,
-                        self._wall_color
-                    )
+        match dir:
+            case 'E':
+                for stroke in range(self.stroke):
+                    for length in range(self.cell_size - self.stroke):
+                        self._maze.put_pixel(
+                            x * self.cell_size + stroke + offset,
+                            y * self.cell_size + length + self.stroke,
+                            color
+                        )
+            case 'S':
+                for stroke in range(self.stroke):
+                    for length in range(self.cell_size - self.stroke):
+                        self._maze.put_pixel(
+                            x * self.cell_size + length + self.stroke,
+                            y * self.cell_size + stroke + offset,
+                            color
+                        )
+            case 'N':
+                for stroke in range(self.stroke):
+                    for length in range(self.cell_size - self.stroke):
+                        self._maze.put_pixel(
+                            x * self.cell_size + length + self.stroke,
+                            y * self.cell_size + stroke,
+                            color
+                        )
+            case 'W':
+                for stroke in range(self.stroke):
+                    for length in range(self.cell_size - self.stroke):
+                        self._maze.put_pixel(
+                            x * self.cell_size + stroke,
+                            y * self.cell_size + length + self.stroke,
+                            color
+                        )
 
-    def clear_wall(self, x, y, dir: str):
+    def render_corner(self, cell: _Cell, pos: str, clear: bool = False):
+        color = self._wall_color if not clear else self._bg_color
         offset = self.cell_size
-        if dir == 'E':
-            for stroke in range(self.stroke):
-                for length in range(self.cell_size - self.stroke):
-                    self._maze.put_pixel(
-                        x * self.cell_size + stroke + offset,
-                        y * self.cell_size + length + self.stroke,
-                        self._bg_color
-                    )
-        if dir == 'S':
-            for stroke in range(self.stroke):
-                for length in range(self.cell_size - self.stroke):
-                    self._maze.put_pixel(
-                        x * self.cell_size + length + self.stroke,
-                        y * self.cell_size + stroke + offset,
-                        self._bg_color
-                    )
+        match pos:
+            case 'NW':
+                for stroke in range(self.stroke):
+                    for length in range(self.stroke):
+                        self._maze.put_pixel(
+                            cell.x * self.cell_size + stroke,
+                            cell.y * self.cell_size + length,
+                            color
+                        )
+            case 'SW':
+                for stroke in range(self.stroke):
+                    for length in range(self.stroke):
+                        self._maze.put_pixel(
+                            cell.x * self.cell_size + stroke,
+                            cell.y * self.cell_size + length + offset,
+                            color
+                        )
+            case 'NE':
+                for stroke in range(self.stroke):
+                    for length in range(self.stroke):
+                        self._maze.put_pixel(
+                            cell.x * self.cell_size + stroke + offset,
+                            cell.y * self.cell_size + length,
+                            color
+                        )
+            case 'SE':
+                for stroke in range(self.stroke):
+                    for length in range(self.stroke):
+                        self._maze.put_pixel(
+                            cell.x * self.cell_size + stroke + offset,
+                            cell.y * self.cell_size + length + offset,
+                            color
+                        )
 
     def render_cell(self, cell: _Cell):
         if cell.x == 0:
             self.render_wall(0, cell.y, 'W')
+            self.render_corner(cell, 'SW')
         if cell.y == 0:
             self.render_wall(cell.x, 0, 'N')
+            self.render_corner(cell, 'NW')
         if cell.east.is_closed or cell.x == self.map.width - 1:
             self.render_wall(cell.x, cell.y, 'E')
+            self.render_corner(cell, 'NE')
+            self.render_corner(cell, 'SE')
         else:
-            self.clear_wall(cell.x, cell.y, 'E')
+            self.render_wall(cell.x, cell.y, 'E', clear=True)
+            if cell.above_cell and cell.right_cell:
+                if not cell.north.is_closed\
+                    and not cell.above_cell.east.is_closed\
+                        and not cell.right_cell.north.is_closed:
+                    self.render_corner(cell, 'NE', clear=True)
+            if cell.below_cell and cell.right_cell:
+                if not cell.south.is_closed\
+                    and not cell.below_cell.east.is_closed\
+                        and not cell.right_cell.south.is_closed:
+                    self.render_corner(cell, 'SE', clear=True)
         if cell.south.is_closed or cell.y == self.map.height - 1:
             self.render_wall(cell.x, cell.y, 'S')
+            self.render_corner(cell, 'SW')
+            self.render_corner(cell, 'SE')
         else:
-            self.clear_wall(cell.x, cell.y, 'S')
+            self.render_wall(cell.x, cell.y, 'S', clear=True)
+            if cell.below_cell and cell.left_cell:
+                if not cell.west.is_closed\
+                    and not cell.below_cell.west.is_closed\
+                        and not cell.left_cell.south.is_closed:
+                    self.render_corner(cell, 'SW', clear=True)
+            if cell.below_cell and cell.right_cell:
+                if not cell.east.is_closed\
+                    and not cell.below_cell.east.is_closed\
+                        and not cell.right_cell.south.is_closed:
+                    self.render_corner(cell, 'SE', clear=True)
 
     def render_maze(self):
-        for row in self.map.map:
-            for cell in row:
-                self.render_cell(cell)
+        for cell in self.cell_gen():
+            self.render_cell(cell)
 
         self._mlx.mlx_put_image_to_window(
             self._mlx_ptr,
@@ -200,9 +250,20 @@ class Gui:
             self.border, self.border
         )
 
-    def display(self):
-        if not self._window:
-            self.init_mlx()
+    def key_hook(self, keycode: int, param: any):
+        match keycode:
+            case 0xff1b:
+                self.quit_gui()
+            case _:
+                print(f"keycode: {hex(keycode)}")
+
+    def expose_hook(self, param):
         self.render_bg()
         self.render_maze()
+
+    def display(self):
+        self.init_mlx()
+        self._mlx.mlx_hook(self._window, 33, 0, self.quit_gui, None)
+        self._mlx.mlx_key_hook(self._window, self.key_hook, None)
+        self._mlx.mlx_expose_hook(self._window, self.expose_hook, None)
         self._mlx.mlx_loop(self._mlx_ptr)
