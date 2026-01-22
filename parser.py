@@ -1,3 +1,6 @@
+from random import randint
+
+
 class ParseError(Exception):
     def __init__(self, message: str):
         super().__init__(message)
@@ -28,6 +31,9 @@ class Options:
         self.exit = None
         self.output_file = None
         self.perfect = None
+        self.seed = randint(0, 999_999_999)
+        self.algorithm = "DFS"
+        self.interface = "gui"
 
     def __str__(self):
         return str(self.__dict__)
@@ -125,8 +131,3 @@ class Parser:
             options.add_option(line[:op], line[op + 1:])
         options.check()
         return options
-
-
-if __name__ == "__main__":
-    options = Parser.get_options("default_config.txt")
-    print(options)

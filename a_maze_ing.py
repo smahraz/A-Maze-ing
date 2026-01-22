@@ -10,6 +10,9 @@ if __name__ == "__main__":
         exit(1)
     print(options)
     map = Map(options.width, options.height)
-    if options.interface == "gui":
-        gui = Gui(map)
-        gui.display()
+    match options.interface:
+        case "gui":
+            gui = Gui(map)
+            gui.display()
+        case "tui":
+            pass
