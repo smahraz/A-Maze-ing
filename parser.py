@@ -116,8 +116,12 @@ class Options:
 class Parser:
     @staticmethod
     def _get_lines(file_path):
-        with open(file_path, 'r') as file:
-            lines = file.readlines()
+        try:
+            with open(file_path, 'r') as file:
+                lines = file.readlines()
+        except Exception:
+            raise ParseError(
+                f"can't access config file {file_path}")
         return [line[:-1] for line in lines]
 
     @staticmethod
