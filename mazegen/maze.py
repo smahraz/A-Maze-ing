@@ -80,6 +80,7 @@ class Maze:
 
         self.map = [[Cell(x, y) for x in range(width)] for y in range(height)]
         self._set_walls()
+        self._rander_42()
 
     def _set_walls(self) -> None:
         def column_to_list(column: int) -> list[Cell]:
@@ -151,3 +152,34 @@ class Maze:
             case 'S':
                 self.open_south(x, y)
         return self
+
+    def _rander_42(self) -> None:
+        middle_y = self.height // 2
+        middle_x = self.width // 2
+
+        self.protect_cell(middle_x - 1, middle_y)
+        self.protect_cell(middle_x - 2, middle_y)
+        self.protect_cell(middle_x - 3, middle_y)
+
+        self.protect_cell(middle_x - 3, middle_y - 1)
+        self.protect_cell(middle_x - 3, middle_y - 2)
+
+        self.protect_cell(middle_x - 1, middle_y + 1)
+        self.protect_cell(middle_x - 1, middle_y + 2)
+
+        self.protect_cell(middle_x + 1, middle_y)
+        self.protect_cell(middle_x + 2, middle_y)
+        self.protect_cell(middle_x + 3, middle_y)
+
+        self.protect_cell(middle_x + 1, middle_y + 1)
+        self.protect_cell(middle_x + 1, middle_y + 2)
+
+        self.protect_cell(middle_x + 2, middle_y + 2)
+        self.protect_cell(middle_x + 3, middle_y + 2)
+
+
+        self.protect_cell(middle_x + 3, middle_y - 1)
+        self.protect_cell(middle_x + 3, middle_y - 2)
+
+        self.protect_cell(middle_x + 2, middle_y - 2)
+        self.protect_cell(middle_x + 1, middle_y - 2)
