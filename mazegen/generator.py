@@ -1,6 +1,7 @@
 from random import Random
-from map import Map
-from dfs import DFS, Step
+from mazegen import Map
+from mazegen.algo import DFS
+from mazegen.utils import Step
 
 
 class MazeGenerator:

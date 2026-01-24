@@ -1,8 +1,7 @@
 from parser import Parser
 from sys import argv
-from gui import Gui
-from gen import MazeGenerator
-from display import Frame
+from mazegen import MazeGenerator
+from ui import Gui
 
 if __name__ == "__main__":
     if len(argv) != 2:
@@ -16,11 +15,13 @@ if __name__ == "__main__":
         exit(1)
     print(options)
     map = MazeGenerator(
-        options.width, options.height, options.seed).generate_maze()
+        options.width, options.height, options.seed
+    ).generate_maze()
     match options.interface:
         case "gui":
             gui = Gui(map)
             gui.display()
         case "tui":
-            Frame.clear()
-            Frame.display(map)
+            pass
+            # Tui(map)
+            # Frame.display(map)

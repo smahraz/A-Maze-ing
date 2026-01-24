@@ -1,5 +1,5 @@
 from mlx import Mlx
-from map import Map, _Cell
+from mazegen.maze import Map, _Cell
 
 
 class Color:

@@ -139,18 +139,3 @@ class Map:
         for row in self.map:
             for cell in row:
                 yield cell
-
-
-if __name__ == "__main__":
-    # for row in Map(5, 2).map:
-    #    print(row)
-    m = Map(30, 20)
-    m.open_north(10, 10)
-    m.open_east(10, 10)
-    m.open_south(10, 10)
-    m.open_west(10, 10)
-    m.open_south(29, 19)
-    m.open_south(0, 0)
-    m.open_east(0, 0)
-
-    print(m.encode())

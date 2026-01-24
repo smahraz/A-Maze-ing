@@ -1,14 +1,7 @@
-from map import Map, _Cell
+from mazegen import Map
+from mazegen.utils import Step
+from mazegen.maze import _Cell
 from random import Random
-
-
-class Step:
-    def __init__(self, x: int, y: int, wall: str) -> None:
-        assert wall in {"W", "S", "E", "N", None}, \
-            "wall should be {W, S, E, N}"
-        self.x = x
-        self.y = y
-        self.wall = wall
 
 
 def _is_deadend(cell: _Cell, visited: set[_Cell]) -> bool:
