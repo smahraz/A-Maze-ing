@@ -122,7 +122,7 @@ class Parser:
         except Exception:
             raise ParseError(
                 f"can't access config file {file_path}")
-        return [line[:-1] for line in lines]
+        return [line.strip() for line in lines]
 
     @staticmethod
     def get_options(file_path):
@@ -131,7 +131,10 @@ class Parser:
         for line in lines:
             if not line or line[0] == '#':
                 continue
-            op = line.index('=')
+            try:
+                op = line.index('=')
+            except ValueError:
+                raise ParseError(f"invalid configuration line: {line}")
             options.add_option(line[:op], line[op + 1:])
         options.check()
         return options
