@@ -2,6 +2,7 @@ from parser import Parser
 from sys import argv
 from gui import Gui
 from gen import MazeGenerator
+from display import Frame
 
 if __name__ == "__main__":
     if len(argv) != 2:
@@ -21,4 +22,5 @@ if __name__ == "__main__":
             gui = Gui(map)
             gui.display()
         case "tui":
-            pass
+            Frame.clear()
+            Frame.display(map)
