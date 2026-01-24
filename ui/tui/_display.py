@@ -20,7 +20,10 @@ class Frame:
     def _vertical(row: list[Cell], inside_cell: Callable | None):
         print("║", end="")
         for cell in row:
-            print(inside_cell(cell) if inside_cell else "  ", end="")
+            if not cell.is_protected:
+                print(inside_cell(cell) if inside_cell else "  ", end="")
+            else:
+                print("██", end="")
             print("║" if cell.east.is_closed else " ", end="")
         print()
 
