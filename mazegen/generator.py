@@ -1,4 +1,4 @@
-from random import Random
+from random import Random, randint
 from mazegen import Maze, Step
 from mazegen.algo import DFS
 
@@ -7,6 +7,10 @@ class MazeGenerator:
     def __init__(self, width: int, height: int, seed: int) -> None:
         self.maze = Maze(width, height)
         self.seed = seed
+
+    def reseed(self) -> tuple[Maze, list[Step]]:
+        self.maze = Maze(self.maze.width, self.maze.height)
+        self.seed = randint(0, 999_999_999)
 
     def generate_maze(self) -> Maze:
         return self._generate(False)[0]
