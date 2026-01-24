@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Generator
 
 
 class _Wall:
@@ -134,6 +134,11 @@ class Map:
 
     def protect_cell(self, x: int, y: int) -> None:
         self.map[y][x].protect()
+
+    def cell_iterator(self) -> Generator[_Cell, None, None]:
+        for row in self.map:
+            for cell in row:
+                yield cell
 
 
 if __name__ == "__main__":
