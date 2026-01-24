@@ -15,7 +15,7 @@ class MazeGenerator:
         return self._generate()[1]
 
     def generate(self) -> tuple[Maze, list[Step]]:
-        pass
+        return self._generate()
 
     def _generate(self, save_step: bool = True) -> tuple[Maze, list[Step]]:
         return DFS(self.maze, save_step, Random(self.seed))

@@ -139,3 +139,15 @@ class Maze:
         for row in self.map:
             for cell in row:
                 yield cell
+
+    def apply_step(self, x: int, y: int, wall: str | None) -> "Maze":
+        match wall:
+            case 'W':
+                self.open_west(x, y)
+            case 'E':
+                self.open_east(x, y)
+            case 'N':
+                self.open_north(x, y)
+            case 'S':
+                self.open_south(x, y)
+        return self
