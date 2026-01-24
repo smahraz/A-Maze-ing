@@ -1,8 +1,11 @@
-from .maze import Map
+from .maze import Maze, Cell
+from .utils import Step
 from .generator import MazeGenerator
 
 
 __all__ = [
-    "Map",
-    "MazeGenerator"
+    "Maze",
+    "Cell",
+    "MazeGenerator",
+    "Step"
 ]

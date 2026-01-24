@@ -21,7 +21,7 @@ class _Wall:
         cls.id += 1
 
 
-class _Cell:
+class Cell:
     def __init__(self, x: int, y: int) -> None:
         self.west = _Wall()
         self.east = _Wall()
@@ -31,10 +31,10 @@ class _Cell:
         self.x = x
         self.y = y
 
-        self.above_cell: _Cell | None = None
-        self.below_cell: _Cell | None = None
-        self.left_cell: _Cell | None = None
-        self.right_cell: _Cell | None = None
+        self.above_cell: Cell | None = None
+        self.below_cell: Cell | None = None
+        self.left_cell: Cell | None = None
+        self.right_cell: Cell | None = None
 
         self.is_protected: bool = False
 
@@ -50,12 +50,12 @@ class _Cell:
     def __repr__(self) -> str:
         return self.__str__()
 
-    def next_in_row(self, other: "_Cell") -> None:
+    def next_in_row(self, other: "Cell") -> None:
         self.east = other.west
         self.right_cell = other
         other.left_cell = self
 
-    def next_in_column(self, other: "_Cell") -> None:
+    def next_in_column(self, other: "Cell") -> None:
         self.south = other.north
         self.below_cell = other
         other.above_cell = self
@@ -68,7 +68,7 @@ class _Cell:
         self.is_protected = True
 
 
-class Map:
+class Maze:
     def __init__(self, width: int, height: int) -> None:
         cls_nm = self.__class__.__name__
         assert isinstance(height, int), f"{cls_nm}.height isn't an int"
@@ -78,14 +78,14 @@ class Map:
         self.height = height
         self.width = width
 
-        self.map = [[_Cell(x, y) for x in range(width)] for y in range(height)]
+        self.map = [[Cell(x, y) for x in range(width)] for y in range(height)]
         self._set_walls()
 
     def _set_walls(self) -> None:
-        def column_to_list(column: int) -> list[_Cell]:
+        def column_to_list(column: int) -> list[Cell]:
             return [row[column] for row in self.map]
 
-        def set_walls(cells: list[_Cell], apply_func: Callable) -> None:
+        def set_walls(cells: list[Cell], apply_func: Callable) -> None:
             prev = None
             for cell in cells:
                 if not prev:
@@ -135,7 +135,7 @@ class Map:
     def protect_cell(self, x: int, y: int) -> None:
         self.map[y][x].protect()
 
-    def cell_iterator(self) -> Generator[_Cell, None, None]:
+    def cell_iterator(self) -> Generator[Cell, None, None]:
         for row in self.map:
             for cell in row:
                 yield cell

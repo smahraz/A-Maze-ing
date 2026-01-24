@@ -1,5 +1,5 @@
 from mlx import Mlx
-from mazegen.maze import Map, _Cell
+from mazegen import Maze, Cell, Step
 
 
 class Color:
@@ -55,7 +55,7 @@ class Image:
 
 
 class Gui:
-    def __init__(self, map: Map):
+    def __init__(self, map: Maze):
         self.map = map
         self._init_params(map)
         self.width = self.cell_size * map.width\
@@ -79,7 +79,7 @@ class Gui:
             255
         )
 
-    def _init_params(self, map: Map):
+    def _init_params(self, map: Maze):
         if map.width <= 50 and map.height <= 25:
             self.border = 40
             self.cell_size = 32
@@ -178,7 +178,7 @@ class Gui:
                             color
                         )
 
-    def render_corner(self, cell: _Cell, pos: str, clear: bool = False):
+    def render_corner(self, cell: Cell, pos: str, clear: bool = False):
         color = self._wall_color if not clear else self._bg_color
         offset = self.cell_size
         match pos:
@@ -215,7 +215,7 @@ class Gui:
                             color
                         )
 
-    def render_cell(self, cell: _Cell):
+    def render_cell(self, cell: Cell):
         if cell.x == 0:
             self.render_wall(0, cell.y, 'W')
             self.render_corner(cell, 'SW')
