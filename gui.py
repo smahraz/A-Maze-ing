@@ -55,12 +55,9 @@ class Image:
 
 
 class Gui:
-    border = 30
-    cell_size = 30
-    stroke = 3
-
     def __init__(self, map: Map):
         self.map = map
+        self._init_params(map)
         self.width = self.cell_size * map.width\
             + self.border * 2 + self.stroke
         self.height = self.cell_size * map.height\
@@ -81,6 +78,28 @@ class Gui:
             255,
             255
         )
+
+    def _init_params(self, map: Map):
+        if map.width <= 50 and map.height <= 25:
+            self.border = 40
+            self.cell_size = 32
+            self.stroke = 8
+        elif map.width <= 100 and map.height <= 50:
+            self.border = 20
+            self.cell_size = 16
+            self.stroke = 4
+        elif map.width <= 200 and map.height <= 100:
+            self.border = 10
+            self.cell_size = 8
+            self.stroke = 2
+        elif map.width <= 400 and map.height <= 200:
+            self.border = 5
+            self.cell_size = 4
+            self.stroke = 1
+        else:
+            self.border = 0
+            self.cell_size = 2
+            self.stroke = 1
 
     def quit_gui(self, param=None):
         self._mlx.mlx_loop_exit(self._mlx_ptr)

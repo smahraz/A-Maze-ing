@@ -1,7 +1,7 @@
 from parser import Parser
 from sys import argv
-from map import Map
 from gui import Gui
+from gen import MazeGenerator
 
 if __name__ == "__main__":
     if len(argv) != 2:
@@ -14,7 +14,8 @@ if __name__ == "__main__":
         print("Error:", e)
         exit(1)
     print(options)
-    map = Map(options.width, options.height)
+    map = MazeGenerator(
+        options.width, options.height, options.seed).generate_maze()
     match options.interface:
         case "gui":
             gui = Gui(map)
