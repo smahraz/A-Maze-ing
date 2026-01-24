@@ -39,7 +39,7 @@ PERFECT=True
 # Random seed for reproducible maze generation
 # Uncomment and set to any integer for consistent results across runs
 # Leave commented for a different maze each time
-#SEED=1234567
+SEED=1234567
 
 # Maze generation algorithm
 # Options:
@@ -51,4 +51,4 @@ PERFECT=True
 # Options:
 #   gui - Graphical interface [default]
 #   tui - Text-based terminal interface
-#INTERFACE=gui
+INTERFACE=tui

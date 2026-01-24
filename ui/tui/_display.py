@@ -1,15 +1,15 @@
-from map import Map, _Cell
+from mazegen import Maze, Cell
+from typing import Callable
 
 
 class Frame:
-
     @staticmethod
-    def display(map: Map) -> None:
+    def display(maze: Maze, inside_cell: Callable | None = None) -> None:
         print("\033[H", end="")
-        for i, row in enumerate(map.map):
+        for i, row in enumerate(maze.map):
             if i == 0:
                 Frame._border(len(row))
-            Frame._vertical(row)
+            Frame._vertical(row, inside_cell)
             Frame._horizontal(row)
 
     @staticmethod
@@ -17,15 +17,15 @@ class Frame:
         print("\033[2J", end="")
 
     @staticmethod
-    def _vertical(row: list[_Cell]):
+    def _vertical(row: list[Cell], inside_cell: Callable | None):
         print("║", end="")
         for cell in row:
-            print("  ", end="")
+            print(inside_cell(cell) if inside_cell else "  ", end="")
             print("║" if cell.east.is_closed else " ", end="")
         print()
 
     @staticmethod
-    def _horizontal(row: list[_Cell]):
+    def _horizontal(row: list[Cell]):
         print('+', end="")
         for cell in row:
             if cell.south.is_closed:
@@ -42,15 +42,3 @@ class Frame:
     @staticmethod
     def _border(row_len: int) -> None:
         print("+--" * row_len, end="+\n")
-
-
-if __name__ == "__main__":
-    from time import sleep
-    from random import randint, choice
-    m = Map(40, 20)
-    Frame.clear()
-    for i in range(1000):
-        f = choice([m.open_east, m.open_north, m.open_south, m.open_west])
-        f(randint(0, 39), randint(0, 19))
-        Frame.display(m)
-        sleep(0.007)
