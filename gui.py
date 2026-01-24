@@ -85,13 +85,6 @@ class Gui:
     def quit_gui(self, param=None):
         self._mlx.mlx_loop_exit(self._mlx_ptr)
 
-    def cell_gen(self):
-        def cells(map: list[list[_Cell]]):
-            for row in map:
-                for cell in row:
-                    yield cell
-        return cells(self.map.map)
-
     def init_mlx(self):
         if not self._mlx_ptr:
             self._mlx_ptr = self._mlx.mlx_init()
@@ -244,7 +237,7 @@ class Gui:
                     self.render_corner(cell, 'SE', clear=True)
 
     def render_maze(self):
-        for cell in self.cell_gen():
+        for cell in self.map.cell_iterator():
             self.render_cell(cell)
 
         self._mlx.mlx_put_image_to_window(
