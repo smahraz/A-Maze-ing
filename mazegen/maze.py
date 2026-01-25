@@ -154,6 +154,9 @@ class Maze:
         return self
 
     def _rander_42(self) -> None:
+        if self.height < 7 or self.width < 9:
+            return
+
         middle_y = self.height // 2
         middle_x = self.width // 2
 
@@ -176,7 +179,6 @@ class Maze:
 
         self.protect_cell(middle_x + 2, middle_y + 2)
         self.protect_cell(middle_x + 3, middle_y + 2)
-
 
         self.protect_cell(middle_x + 3, middle_y - 1)
         self.protect_cell(middle_x + 3, middle_y - 2)
