@@ -2,14 +2,27 @@ from mazegen import Maze, Cell
 from typing import Callable
 
 
+class Color:
+    BLACK_BG = "\033[40m"
+    RED_BG = "\033[41m"
+    WHITE_BG = "\033[47m"
+    GREEN_BG = "\033[42m"
+
+    WHITE = "\033[37m"
+
+    DEFAULT = "\033[0m"
+    protected_cell = RED_BG
+    wall = WHITE
+
+
 class Frame:
     @staticmethod
-    def display(maze: Maze, inside_cell: Callable | None = None) -> None:
+    def draw(maze: Maze, cell_bg: Callable | None = None) -> None:
         print("\033[H", end="")
-        for i, row in enumerate(maze.map):
-            if i == 0:
-                Frame._border(len(row))
-            Frame._vertical(row, inside_cell)
+        for row in maze.map:
+            if not row[0].above_cell:
+                Frame._render_ceiling(row)
+            Frame._vertical(row, cell_bg)
             Frame._horizontal(row)
 
     @staticmethod
@@ -17,31 +30,83 @@ class Frame:
         print("\033[2J", end="")
 
     @staticmethod
-    def _vertical(row: list[Cell], inside_cell: Callable | None):
-        print("║", end="")
+    def _vertical(row: list[Cell], cell_bg: Callable | None):
+        Frame._print("║")
         for cell in row:
             if not cell.is_protected:
-                print(inside_cell(cell) if inside_cell else "  ", end="")
+                if cell_bg:
+                    Frame._print(cell_bg(cell), " " * 2)
+                else:
+                    Frame._print(" " * 2)
             else:
-                print("██", end="")
-            print("║" if cell.east.is_closed else " ", end="")
+                Frame._print(Color.protected_cell, " " * 2)
+
+            Frame._print("║" if cell.east.is_closed else " ")
+
         print()
 
     @staticmethod
     def _horizontal(row: list[Cell]):
-        print('+', end="")
-        for cell in row:
-            if cell.south.is_closed:
-                print("--+",  end="")
+        if not row[0].left_cell:
+            if row[0].below_cell:
+                Frame._print("╠" if row[0].south.is_closed else "║")
             else:
-                if cell.right_cell and not cell.right_cell.south.is_closed \
-                    and cell.below_cell and not cell.below_cell.east.is_closed\
-                        and not cell.east.is_closed:
-                    print(" "*3, end="")
-                else:
-                    print("  +", end="")
+                Frame._print("╚")
+
+        for cell in row:
+            Frame._print("═" * 2 if cell.south.is_closed else " " * 2)
+
+            join = Frame._get_join(
+                cell.east.is_closed,
+                cell.right_cell.south.is_closed if cell.right_cell else False,
+                cell.below_cell.east.is_closed if cell.below_cell else False,
+                cell.south.is_closed
+            )
+            Frame._print(join)
         print()
 
     @staticmethod
-    def _border(row_len: int) -> None:
-        print("+--" * row_len, end="+\n")
+    def _get_join(n: bool, e: bool, s: bool, w: bool) -> str:
+        if n & e & s & w:
+            return "╬"
+
+        if n & e & w:
+            return "╩"
+        if s & e & w:
+            return "╦"
+        if s & n & w:
+            return "╣"
+        if s & n & e:
+            return "╠"
+
+        if w & s:
+            return "╗"
+        if s & e:
+            return "╔"
+        if e & n:
+            return "╚"
+        if n & w:
+            return "╝"
+
+        if n | s:
+            return "║"
+        if w | e:
+            return "═"
+
+        return " "
+
+    @staticmethod
+    def _render_ceiling(row: list[Cell]) -> None:
+        Frame._print('╔')
+
+        for cell in row:
+            Frame._print("═" * 2)
+            if cell.right_cell:
+                Frame._print("╦" if cell.east.is_closed else "═")
+
+        Frame._print('╗')
+        print(Color.DEFAULT)
+
+    @staticmethod
+    def _print(*args, end=Color.DEFAULT) -> None:
+        print(Color.BLACK_BG, Color.wall, *args, end=end, sep="")

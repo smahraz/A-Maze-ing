@@ -16,14 +16,14 @@
 ##################################################
 
 # Maze dimensions (must be positive integers)
-WIDTH=50
-HEIGHT=25
+WIDTH=25
+HEIGHT=15
 
 # Starting position (format: x,y where 0,0 is top-left corner)
 ENTRY=0,0
 
 # Ending position (format: x,y)
-EXIT=49,24
+EXIT=1,1
 
 # Path where the generated maze will be saved
 OUTPUT_FILE=maze.txt
