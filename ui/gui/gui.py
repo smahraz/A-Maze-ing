@@ -1,5 +1,5 @@
 from mlx import Mlx
-from mazegen import Maze, Cell, Step
+from mazegen import MazeGenerator, Maze, Cell
 
 
 class Color:
@@ -48,19 +48,20 @@ class Image:
             x, y
         )
 
-    def clear(self):
+    def clear(self, color: Color = Color(0, 0, 0, 0)):
         for x in range(self.width):
             for y in range(self.height):
-                self.put_pixel(x, y, Color(0, 0, 0, 0))
+                self.put_pixel(x, y, color)
 
 
 class Gui:
-    def __init__(self, map: Maze):
-        self.map = map
-        self._init_params(map)
-        self.width = self.cell_size * map.width\
+    def __init__(self, maze_gen: MazeGenerator):
+        self.maze_gen = maze_gen
+        self.map = maze_gen.generate_maze()
+        self._init_params(self.map)
+        self.width = self.cell_size * self.map.width\
             + self.border * 2 + self.stroke
-        self.height = self.cell_size * map.height\
+        self.height = self.cell_size * self.map.height\
             + self.border * 2 + self.stroke
 
         self._mlx = Mlx()
@@ -78,6 +79,10 @@ class Gui:
             255,
             255
         )
+
+        self.animate = False
+        self.start_animation = False
+        self.cursors = []
 
     def _init_params(self, map: Maze):
         if map.width <= 50 and map.height <= 25:
@@ -108,6 +113,12 @@ class Gui:
         if not self._mlx_ptr:
             self._mlx_ptr = self._mlx.mlx_init()
 
+        self._window = self._mlx.mlx_new_window(
+            self._mlx_ptr,
+            self.width,
+            self.height,
+            "A-Maze-ing"
+        )
         self._maze = Image(
             self._mlx,
             self._mlx_ptr,
@@ -121,14 +132,6 @@ class Gui:
             self.height
         )
         self._maze.clear()
-        self._bg.clear()
-
-        self._window = self._mlx.mlx_new_window(
-            self._mlx_ptr,
-            self.width,
-            self.height,
-            "A-Maze-ing"
-        )
 
     def render_bg(self):
         for x in range(self.width):
@@ -215,7 +218,34 @@ class Gui:
                             color
                         )
 
+    def color_cell(self, cell: Cell, color: Color):
+        for w in range(self.cell_size):
+            for h in range(self.cell_size):
+                self._maze.put_pixel(
+                    cell.x * self.cell_size + w,
+                    cell.y * self.cell_size + h,
+                    color
+                )
+
+    def color_cells(self, color: Color):
+        for cell in self.map.cell_iterator():
+            self.color_cell(cell, color)
+
+    def render_protected(self, cell: Cell):
+        self.color_cell(cell, Color(255, 0, 0))
+        self.render_wall(cell.x, cell.y, 'N')
+        self.render_wall(cell.x, cell.y, 'E')
+        self.render_wall(cell.x, cell.y, 'W')
+        self.render_wall(cell.x, cell.y, 'S')
+        self.render_corner(cell, 'NW')
+        self.render_corner(cell, 'SW')
+        self.render_corner(cell, 'NE')
+        self.render_corner(cell, 'SE')
+
     def render_cell(self, cell: Cell):
+        if cell.is_protected:
+            self.render_protected(cell)
+            return
         if cell.x == 0:
             self.render_wall(0, cell.y, 'W')
             self.render_corner(cell, 'SW')
@@ -255,9 +285,40 @@ class Gui:
                         and not cell.right_cell.south.is_closed:
                     self.render_corner(cell, 'SE', clear=True)
 
+    def render_cursor(self, cell: Cell, clear: bool = False):
+        color = Color(0, 255, 0, 50) if not clear else self._bg_color
+        for w in range(self.cell_size - self.stroke):
+            for h in range(self.cell_size - self.stroke):
+                self._maze.put_pixel(
+                    cell.x * self.cell_size + w + self.stroke,
+                    cell.y * self.cell_size + h + self.stroke,
+                    color
+                )
+
     def render_maze(self):
         for cell in self.map.cell_iterator():
             self.render_cell(cell)
+
+        self._mlx.mlx_put_image_to_window(
+            self._mlx_ptr,
+            self._window,
+            self._maze.image,
+            self.border, self.border
+        )
+
+    def animate_maze(self):
+        if not self.steps:
+            # print("done")
+            self.start_animation = False
+            return
+        step = self.steps[0]
+        self.steps = self.steps[1:]
+        self.map.apply_step(step.x, step.y, step.wall)
+        self.render_cell(self.map.map[step.y][step.x])
+        for s in self.steps[:5]:
+            self.render_cursor(self.map.map[s.y][s.x])
+            self.cursors.append(self.map.map[s.y][s.x])
+        self.render_cursor(self.map.map[step.y][step.x], clear=True)
 
         self._mlx.mlx_put_image_to_window(
             self._mlx_ptr,
@@ -270,6 +331,31 @@ class Gui:
         match keycode:
             case 0xff1b:
                 self.quit_gui()
+            case 0x72:
+                self.maze_gen.reseed()
+                if self.start_animation:
+                    self.start_animation = False
+                    for cursor in self.cursors:
+                        self.render_cursor(cursor, clear=True)
+                    self.cursors = []
+                if not self.animate:
+                    self.map = self.maze_gen.generate_maze()
+                    self.render_maze()
+                else:
+                    self.steps = self.maze_gen.generate_steps()
+                    self.map = Maze(self.map.width, self.map.height)
+                    # self.color_cells(Color(255, 255, 255, 50))
+                    self.color_cells(Color(255, 255, 255))
+                    print("coloring...")
+                    self.start_animation = True
+                    # self._maze.clear(Color(255, 255, 255))
+
+            case 0x61:
+                if not self.animate:
+                    self.animate = True
+                else:
+                    self.animate = False
+                # print(self.animate)
             case _:
                 print(f"keycode: {hex(keycode)}")
 
@@ -277,9 +363,15 @@ class Gui:
         self.render_bg()
         self.render_maze()
 
+    def loop_hook(self, param):
+        if self.start_animation:
+            self.animate_maze()
+            # print("animating...")
+
     def display(self):
         self.init_mlx()
         self._mlx.mlx_hook(self._window, 33, 0, self.quit_gui, None)
         self._mlx.mlx_key_hook(self._window, self.key_hook, None)
         self._mlx.mlx_expose_hook(self._window, self.expose_hook, None)
+        self._mlx.mlx_loop_hook(self._mlx_ptr, self.loop_hook, None)
         self._mlx.mlx_loop(self._mlx_ptr)
