@@ -62,54 +62,55 @@ class Options:
                 or self.exit.x < 0 or self.exit.y < 0:
             raise ValueError("Invalid EXIT coordinates")
 
-    def add_option(self, key: str, value):
-        match key:
-            case "WIDTH":
+    def add_option(self, key: str, value: str):
+        value = value.strip()
+        match key.lower().strip():
+            case "width":
                 try:
                     value = int(value)
                 except ValueError:
-                    raise ValueError("WIDTH must be an int value")
+                    raise ValueError("Width must be an int value")
                 self.width = value
-            case "HEIGHT":
+            case "height":
                 try:
                     value = int(value)
                 except ValueError:
-                    raise ValueError("HEIGHT must be an int value")
+                    raise ValueError("Height must be an int value")
                 self.height = value
-            case "ENTRY":
+            case "entry":
                 try:
                     value = Pos.from_string(value)
                 except ValueError:
-                    raise ValueError("ENTRY must be a Pos value (ex: x,y)")
+                    raise ValueError("Entry must be a Pos value (ex: x,y)")
                 self.entry = value
-            case "EXIT":
+            case "exit":
                 try:
                     value = Pos.from_string(value)
                 except ValueError:
-                    raise ValueError("EXIT must be a Pos value (ex: x,y)")
+                    raise ValueError("Exit must be a Pos value (ex: x,y)")
                 self.exit = value
-            case "OUTPUT_FILE":
+            case "output_file":
                 self.output_file = value
-            case "PERFECT":
+            case "perfect":
                 if value == 'True':
                     self.perfect = True
                 elif value == 'False':
                     self.perfect = False
                 else:
-                    raise ValueError("PERFECT must be a True or False")
-            case "SEED":
+                    raise ValueError("Perfect must be a True or False")
+            case "seed":
                 try:
                     value = int(value)
                 except ValueError:
-                    raise ValueError("SEED must be an int value")
+                    raise ValueError("Seed must be an int value")
                 self.seed = value
-            case "ALGORITHM":
+            case "algorithm":
                 if value not in ['DFS', 'BFS']:
-                    raise ValueError("ALGORITHM must be DFS or BFS")
+                    raise ValueError("Algorithm must be DFS or BFS")
                 self.algorithm = value
-            case "INTERFACE":
+            case "interface":
                 if value not in ['gui', 'tui']:
-                    raise ValueError("INTERFACE must be gui or tui")
+                    raise ValueError("Interface must be gui or tui")
                 self.interface = value
 
 
