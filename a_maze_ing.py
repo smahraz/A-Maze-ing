@@ -22,5 +22,4 @@ if __name__ == "__main__":
             gui = Gui(maze_gen)
             gui.display()
         case "tui":
-            tui = Tui(maze_gen)
-            tui.display()
+            Tui(maze_gen).run()

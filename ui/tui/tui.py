@@ -6,7 +6,7 @@ from time import sleep
 class Tui:
     def __init__(self, mazegen: MazeGenerator) -> None:
         self.mazegen = mazegen
-        self.animation = True
+        self.animation = False
 
     def animate(self) -> None:
         def inside_cell(cell) -> str:
@@ -45,3 +45,17 @@ class Tui:
         else:
             Frame.clear()
             Frame.display(self.mazegen.generate_maze())
+
+    def run(self) -> None:
+        while True:
+            self.display()
+            self._print_options()
+            match input(">>"):
+                case "0":
+                    self.animation = not self.animation
+                case "1":
+                    self.mazegen.reseed()
+
+    def _print_options(self) -> None:
+        print(f"0. {'Enable' if not self.animation else 'Disable'} Animation")
+        print("1. Regenerate Maze")
