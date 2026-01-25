@@ -11,7 +11,8 @@ def _is_deadend(cell: Cell, visited: set[Cell]) -> bool:
         check_cell(cell.right_cell) and check_cell(cell.left_cell)
 
 
-def _open_wall(cell: Cell, visited: set[Cell], wall_int: int) -> tuple[Cell | None, str | None]:
+def _open_wall(cell: Cell, visited: set[Cell], wall_int: int)\
+        -> tuple[Cell | None, str | None]:
     walls = (
         (cell.above_cell, cell.north),
         (cell.right_cell, cell.east),
