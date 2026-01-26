@@ -1,8 +1,10 @@
 from mazegen import Maze, Cell, Step
 from random import Random
 
+
 def random_cell(cells: dict[Cell, None], rng: Random) -> Cell:
     return rng.choice(list(cells.keys()))
+
 
 def get_neighbours(cell: Cell) -> list[Cell]:
     neighbours = []
@@ -15,6 +17,7 @@ def get_neighbours(cell: Cell) -> list[Cell]:
     if cell.left_cell and not cell.left_cell.is_protected:
         neighbours.append(cell.left_cell)
     return neighbours
+
 
 def connect_cells(cell: Cell, maze: set[Cell], rng: Random) -> str:
     valid = []
@@ -37,15 +40,14 @@ def connect_cells(cell: Cell, maze: set[Cell], rng: Random) -> str:
         case cell.below_cell:
             cell.south.open()
             return 'S'
-            
-    
+
 
 def PRIM(map: Maze, save_step: bool, rng: Random) -> tuple[Maze, list[Step]]:
     pool: dict[Cell, None] = {}
     maze: set[Cell] = set()
     frontier: dict[Cell, None] = {}
     steps: list[Step] = []
-    
+
     for cell in map.cell_iterator():
         if cell.is_protected:
             continue
@@ -55,7 +57,7 @@ def PRIM(map: Maze, save_step: bool, rng: Random) -> tuple[Maze, list[Step]]:
     cell = random_cell(pool, rng)
     maze.add(cell)
     if save_step:
-            steps.append(Step(cell.x, cell.y, None))
+        steps.append(Step(cell.x, cell.y, None))
     del pool[cell]
 
     for neighbour in get_neighbours(cell):

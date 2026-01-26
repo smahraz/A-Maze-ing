@@ -4,7 +4,8 @@ from mazegen.algo import DFS, PRIM
 
 
 class MazeGenerator:
-    def __init__(self, width: int, height: int ,algorithm: str, seed: int) -> None:
+    def __init__(
+            self, width: int, height: int, algorithm: str, seed: int) -> None:
         self.maze = Maze(width, height)
         self.algorithm = algorithm
         self.seed = seed
