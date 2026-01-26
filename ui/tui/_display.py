@@ -1,18 +1,6 @@
 from mazegen import Maze, Cell
 from typing import Callable
-
-
-class Color:
-    BLACK_BG = "\033[40m"
-    RED_BG = "\033[41m"
-    WHITE_BG = "\033[47m"
-    GREEN_BG = "\033[42m"
-
-    WHITE = "\033[37m"
-
-    DEFAULT = "\033[0m"
-    protected_cell = RED_BG
-    wall = WHITE
+from ._color import Color
 
 
 class Frame:
@@ -109,4 +97,4 @@ class Frame:
 
     @staticmethod
     def _print(*args, end=Color.DEFAULT) -> None:
-        print(Color.BLACK_BG, Color.wall, *args, end=end, sep="")
+        print(Color.bg, Color.wall, *args, end=end, sep="")

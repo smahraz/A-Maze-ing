@@ -1,12 +1,13 @@
 from mazegen import MazeGenerator, Maze
-from ._display import Frame, Color
+from ._display import Frame
+from ._color import Color
 from time import sleep
 
 
 class Tui:
     def __init__(self, mazegen: MazeGenerator) -> None:
         self.mazegen = mazegen
-        self.animation = False
+        self.animation = True
 
     def animate(self) -> None:
         def cell_bg(cell) -> str:
@@ -47,15 +48,28 @@ class Tui:
             Frame.draw(self.mazegen.generate_maze())
 
     def run(self) -> None:
+        Frame.clear()
+        Frame.draw(self.mazegen.generate_maze())
+        self._print_options()
+
         while True:
-            self.display()
-            self._print_options()
             match input(">>"):
-                case "0":
-                    self.animation = not self.animation
                 case "1":
                     self.mazegen.reseed()
+                case "2":
+                    Color.change()
+                case "3":
+                    self.animation = not self.animation
+                case "0":
+                    break
+                case _:
+                    continue
+
+            self.display()
+            self._print_options()
 
     def _print_options(self) -> None:
-        print(f"0. {'Enable' if not self.animation else 'Disable'} Animation")
         print("1. Regenerate Maze")
+        print("2. Change color")
+        print(f"3. {'Enable' if not self.animation else 'Disable'} Animation")
+        print("0. Exit")
