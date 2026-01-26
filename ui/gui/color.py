@@ -1,3 +1,6 @@
+from random import randint
+
+
 class Color:
 
     def __init__(self, red: int, green: int, blue: int,  alpha: int = 255):
@@ -23,6 +26,13 @@ class Color:
                 self.red << 8 | self.alpha
             )
         return self._little
+
+    @classmethod
+    def get_random(cls):
+        red = randint(0, 255)
+        green = randint(0, 255)
+        blue = randint(0, 255)
+        return cls(red, green, blue)
 
     @classmethod
     def _init_constants(cls):

@@ -4,6 +4,13 @@ from .color import Color
 from .renderer import Renderer
 
 
+class Keys:
+    ESC = 0xff1b
+    R = 0x72
+    A = 0x61
+    C = 0x63
+
+
 class Gui:
     def __init__(self, maze_gen: MazeGenerator):
         self.maze_gen = maze_gen
@@ -17,6 +24,7 @@ class Gui:
         self.animate = False
         self.start_animation = False
         self.steps = []
+        self.steps_done = []
 
     def _init_renderer(self, map: Maze) -> Renderer:
         border, cell_size, stroke = self._compute_params(map)
@@ -54,33 +62,49 @@ class Gui:
         done = self.renderer.render_animation_step(self.steps)
         if done:
             self.start_animation = False
+            self.renderer.color_cells(Color.BG)
+            self.renderer.clear_cursors()
+            self.steps_done = []
         else:
+            self.steps_done.append(self.steps[0])
             self.steps = self.steps[1:]
 
     def key_hook(self, keycode: int, param: any):
         match keycode:
-            case 0xff1b:
+            case Keys.ESC:
                 self.quit_gui()
-            case 0x72:
+            case Keys.R:
                 self.maze_gen.reseed()
                 if self.start_animation:
                     self.start_animation = False
                     self.renderer.color_cells(Color.BG)
                     self.renderer.clear_cursors()
-                if not self.animate:
-                    self.map = self.maze_gen.generate_maze()
-                    self.renderer.maze = self.map
-                    self.renderer.render_maze()
-                else:
+                    self.steps_done = []
+                if self.animate:
                     self.steps = self.maze_gen.generate_steps()
                     self.map = Maze(self.map.width, self.map.height)
                     self.renderer.maze = self.map
                     self.renderer.color_cells(Color.WHITE)
-                    print("coloring...")
+                    self.renderer.render_protected()
                     self.start_animation = True
+                else:
+                    self.map = self.maze_gen.generate_maze()
+                    self.renderer.maze = self.map
+                    self.renderer.render_maze()
 
-            case 0x61:
+            case Keys.A:
                 self.animate = not self.animate
+            case Keys.C:
+                self.renderer._wall_color = Color.get_random()
+                self.renderer._pattern_color = Color.get_random()
+                self.renderer._cursor_color = Color.get_random()
+                if self.steps_done:
+                    for step in self.steps_done:
+                        self.renderer.render_cell(self.map.map[step.y][step.x])
+                else:
+                    self.renderer.render_maze()
+                self.renderer.render_protected()
+
             case _:
                 print(f"keycode: {hex(keycode)}")
 
