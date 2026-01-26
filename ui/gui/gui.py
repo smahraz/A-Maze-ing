@@ -1,7 +1,8 @@
 from mlx import Mlx
-from mazegen import MazeGenerator, Maze
+from mazegen import MazeGenerator, Maze, Step
 from .color import Color
 from .renderer import Renderer
+from typing import Any
 
 
 class Keys:
@@ -23,8 +24,8 @@ class Gui:
 
         self.animate = False
         self.start_animation = False
-        self.steps = []
-        self.steps_done = []
+        self.steps: list[Step] = []
+        self.steps_done: list[Step] = []
 
     def _init_renderer(self, map: Maze) -> Renderer:
         border, cell_size, stroke = self._compute_params(map)
@@ -42,10 +43,10 @@ class Gui:
         else:
             return 0, 2, 1
 
-    def quit_gui(self, param=None):
+    def quit_gui(self, param: Any = None) -> None:
         self._mlx.mlx_loop_exit(self._mlx_ptr)
 
-    def init_mlx(self):
+    def init_mlx(self) -> None:
         self._mlx_ptr = self._mlx.mlx_init()
 
         self._window = self._mlx.mlx_new_window(
@@ -58,18 +59,18 @@ class Gui:
             self._mlx, self._mlx_ptr, self._window)
         self.renderer.init_images()
 
-    def animate_maze(self):
+    def animate_maze(self) -> None:
         done = self.renderer.render_animation_step(self.steps)
         if done:
             self.start_animation = False
-            self.renderer.color_cells(Color.BG)
+            self.renderer.color_cells(self.renderer._bg_color)
             self.renderer.clear_cursors()
             self.steps_done = []
         else:
             self.steps_done.append(self.steps[0])
             self.steps = self.steps[1:]
 
-    def key_hook(self, keycode: int, param: any):
+    def key_hook(self, keycode: int, param: Any) -> None:
         match keycode:
             case Keys.ESC:
                 self.quit_gui()
@@ -77,14 +78,14 @@ class Gui:
                 self.maze_gen.reseed()
                 if self.start_animation:
                     self.start_animation = False
-                    self.renderer.color_cells(Color.BG)
+                    self.renderer.color_cells(self.renderer._bg_color)
                     self.renderer.clear_cursors()
                     self.steps_done = []
                 if self.animate:
                     self.steps = self.maze_gen.generate_steps()
                     self.map = Maze(self.map.width, self.map.height)
                     self.renderer.maze = self.map
-                    self.renderer.color_cells(Color.WHITE)
+                    self.renderer.color_cells(self.renderer._unvisited_color)
                     self.renderer.render_protected()
                     self.start_animation = True
                 else:
@@ -108,7 +109,7 @@ class Gui:
             case _:
                 print(f"keycode: {hex(keycode)}")
 
-    def expose_hook(self, param):
+    def expose_hook(self, param: Any) -> None:
         self.renderer.render_bg()
         self.renderer.render_maze()
 
@@ -119,11 +120,11 @@ class Gui:
             self.renderer.border, self.renderer.border
         )
 
-    def loop_hook(self, param):
+    def loop_hook(self, param: Any) -> None:
         if self.start_animation:
             self.animate_maze()
 
-    def run(self):
+    def run(self) -> None:
         self._mlx.mlx_hook(self._window, 33, 0, self.quit_gui, None)
         self._mlx.mlx_key_hook(self._window, self.key_hook, None)
         self._mlx.mlx_expose_hook(self._window, self.expose_hook, None)

@@ -30,16 +30,17 @@ def connect_cells(cell: Cell, maze: set[Cell], rng: Random) -> str:
     match neighbour:
         case cell.above_cell:
             cell.north.open()
-            return 'N'
+            wall = 'N'
         case cell.left_cell:
             cell.west.open()
-            return 'W'
+            wall = 'W'
         case cell.right_cell:
             cell.east.open()
-            return 'E'
+            wall = 'E'
         case cell.below_cell:
             cell.south.open()
-            return 'S'
+            wall = 'S'
+    return wall
 
 
 def PRIM(map: Maze, save_step: bool, rng: Random) -> tuple[Maze, list[Step]]:

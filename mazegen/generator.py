@@ -10,7 +10,7 @@ class MazeGenerator:
         self.algorithm = algorithm
         self.seed = seed
 
-    def reseed(self) -> tuple[Maze, list[Step]]:
+    def reseed(self) -> None:
         self.maze = Maze(self.maze.width, self.maze.height)
         self.seed = randint(0, 999_999_999)
 
@@ -26,6 +26,7 @@ class MazeGenerator:
     def _generate(self, save_step: bool = True) -> tuple[Maze, list[Step]]:
         match self.algorithm:
             case "DFS":
-                return DFS(self.maze, save_step, Random(self.seed))
+                output = DFS(self.maze, save_step, Random(self.seed))
             case "PRIM":
-                return PRIM(self.maze, save_step, Random(self.seed))
+                output = PRIM(self.maze, save_step, Random(self.seed))
+        return output

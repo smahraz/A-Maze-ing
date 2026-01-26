@@ -86,7 +86,8 @@ class Maze:
         def column_to_list(column: int) -> list[Cell]:
             return [row[column] for row in self.map]
 
-        def set_walls(cells: list[Cell], apply_func: Callable) -> None:
+        def set_walls(
+                cells: list[Cell], apply_func: Callable[..., None]) -> None:
             prev = None
             for cell in cells:
                 if not prev:

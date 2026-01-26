@@ -1,9 +1,10 @@
 from mlx import Mlx
 from .color import Color
+from typing import Any
 
 
 class Image:
-    def __init__(self, mlx: Mlx, mlx_ptr: any, width: int, height: int):
+    def __init__(self, mlx: Mlx, mlx_ptr: Any, width: int, height: int):
         self._mlx = mlx
         self._mlx_ptr = mlx_ptr
         self.width = width
@@ -17,13 +18,13 @@ class Image:
             self._mlx.mlx_get_data_addr(self.image)
         )
 
-    def put_pixel(self, x: int, y: int, color: Color):
+    def put_pixel(self, x: int, y: int, color: Color) -> None:
         color_format = color.big() if not self.form else color.little()
         offset = y * self.sl + x * (self.bpp // 8)
         data_view = self.data[offset:].cast("I")
         data_view[0] = color_format
 
-    def put_to_win(self, win: any, x: int, y: int):
+    def put_to_win(self, win: Any, x: int, y: int) -> None:
         self._mlx.mlx_put_image_to_window(
             self._mlx_ptr,
             win,

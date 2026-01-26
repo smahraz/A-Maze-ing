@@ -1,44 +1,47 @@
 from random import randint
+from typing import TypeVar, Type
+
+pos = TypeVar("pos", bound="Pos")
 
 
 class ParseError(Exception):
-    def __init__(self, message: str):
+    def __init__(self, message: str) -> None:
         super().__init__(message)
 
 
 class Pos:
-    def __init__(self, x, y):
+    def __init__(self, x: int, y: int):
         self.x = x
         self.y = y
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"({self.x},{self.y})"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__str__()
 
     @classmethod
-    def from_string(cls, s: str):
+    def from_string(cls: Type[pos], s: str) -> pos:
         x, y = s.split(",")
         return cls(int(x), int(y))
 
 
 class Options:
-    def __init__(self):
-        self.width = None
-        self.height = None
-        self.entry = None
-        self.exit = None
-        self.output_file = None
-        self.perfect = None
-        self.seed = randint(0, 999_999_999)
-        self.algorithm = "DFS"
-        self.interface = "gui"
+    def __init__(self) -> None:
+        self.width: int
+        self.height: int
+        self.entry: Pos
+        self.exit: Pos
+        self.output_file: str
+        self.perfect: bool
+        self.seed: int = randint(0, 999_999_999)
+        self.algorithm: str = "DFS"
+        self.interface: str = "gui"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.__dict__)
 
-    def check(self):
+    def check(self) -> None:
         if self.width is None:
             raise ParseError("Missing mandatory key: WIDTH")
         if self.height is None:
@@ -62,33 +65,33 @@ class Options:
                 or self.exit.x < 0 or self.exit.y < 0:
             raise ValueError("Invalid EXIT coordinates")
 
-    def add_option(self, key: str, value: str):
+    def add_option(self, key: str, value: str) -> None:
         value = value.strip()
         match key.lower().strip():
             case "width":
                 try:
-                    value = int(value)
+                    width = int(value)
                 except ValueError:
                     raise ValueError("Width must be an int value")
-                self.width = value
+                self.width = width
             case "height":
                 try:
-                    value = int(value)
+                    height = int(value)
                 except ValueError:
                     raise ValueError("Height must be an int value")
-                self.height = value
+                self.height = height
             case "entry":
                 try:
-                    value = Pos.from_string(value)
+                    entry = Pos.from_string(value)
                 except ValueError:
                     raise ValueError("Entry must be a Pos value (ex: x,y)")
-                self.entry = value
+                self.entry = entry
             case "exit":
                 try:
-                    value = Pos.from_string(value)
+                    exit = Pos.from_string(value)
                 except ValueError:
                     raise ValueError("Exit must be a Pos value (ex: x,y)")
-                self.exit = value
+                self.exit = exit
             case "output_file":
                 self.output_file = value
             case "perfect":
@@ -100,10 +103,10 @@ class Options:
                     raise ValueError("Perfect must be a True or False")
             case "seed":
                 try:
-                    value = int(value)
+                    seed = int(value)
                 except ValueError:
                     raise ValueError("Seed must be an int value")
-                self.seed = value
+                self.seed = seed
             case "algorithm":
                 if value not in ['DFS', 'PRIM']:
                     raise ValueError("Algorithm must be DFS or PRIM")
@@ -116,7 +119,7 @@ class Options:
 
 class Parser:
     @staticmethod
-    def _get_lines(file_path):
+    def _get_lines(file_path: str) -> list[str]:
         try:
             with open(file_path, 'r') as file:
                 lines = file.readlines()
@@ -126,7 +129,7 @@ class Parser:
         return [line.strip() for line in lines]
 
     @staticmethod
-    def get_options(file_path):
+    def get_options(file_path: str) -> Options:
         options = Options()
         lines = Parser._get_lines(file_path)
         for line in lines:
