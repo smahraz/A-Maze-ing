@@ -44,7 +44,7 @@ SEED=1234567
 # Maze generation algorithm
 # Options:
 #   DFS (Depth-First Search) - Creates long, winding passages [default]
-#   BFS (Breadth-First Search) - Creates more uniform, branching patterns
+#   PRIM (Prim's algorithm) - Creates more uniform, branching patterns
 #ALGORITHM=DFS
 
 # User interface mode

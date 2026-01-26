@@ -1,11 +1,12 @@
 from random import Random, randint
 from mazegen import Maze, Step
-from mazegen.algo import DFS
+from mazegen.algo import DFS, PRIM
 
 
 class MazeGenerator:
-    def __init__(self, width: int, height: int, seed: int) -> None:
+    def __init__(self, width: int, height: int ,algorithm: str, seed: int) -> None:
         self.maze = Maze(width, height)
+        self.algorithm = algorithm
         self.seed = seed
 
     def reseed(self) -> tuple[Maze, list[Step]]:
@@ -22,4 +23,8 @@ class MazeGenerator:
         return self._generate()
 
     def _generate(self, save_step: bool = True) -> tuple[Maze, list[Step]]:
-        return DFS(self.maze, save_step, Random(self.seed))
+        match self.algorithm:
+            case "DFS":
+                return DFS(self.maze, save_step, Random(self.seed))
+            case "PRIM":
+                return PRIM(self.maze, save_step, Random(self.seed))

@@ -105,8 +105,8 @@ class Options:
                     raise ValueError("Seed must be an int value")
                 self.seed = value
             case "algorithm":
-                if value not in ['DFS', 'BFS']:
-                    raise ValueError("Algorithm must be DFS or BFS")
+                if value not in ['DFS', 'PRIM']:
+                    raise ValueError("Algorithm must be DFS or PRIM")
                 self.algorithm = value
             case "interface":
                 if value not in ['gui', 'tui']:
