@@ -19,7 +19,6 @@ if __name__ == "__main__":
     )
     match options.interface:
         case "gui":
-            gui = Gui(maze_gen)
-            gui.display()
+            Gui(maze_gen).run()
         case "tui":
             Tui(maze_gen).run()
