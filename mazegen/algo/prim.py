@@ -1,8 +1,8 @@
 from mazegen import Maze, Cell, Step
 from random import Random
 
-def random_cell(cells: set[Cell], rng: Random) -> Cell:
-    return rng.choice(cells)
+def random_cell(cells: dict[Cell, None], rng: Random) -> Cell:
+    return rng.choice(list(cells.keys()))
 
 def get_neighbours(cell: Cell) -> list[Cell]:
     neighbours = []
@@ -41,38 +41,38 @@ def connect_cells(cell: Cell, maze: set[Cell], rng: Random) -> str:
     
 
 def PRIM(map: Maze, save_step: bool, rng: Random) -> tuple[Maze, list[Step]]:
-    pool: list[Cell] = []
+    pool: dict[Cell, None] = {}
     maze: set[Cell] = set()
-    frontier: list[Cell] = []
+    frontier: dict[Cell, None] = {}
     steps: list[Step] = []
     
     for cell in map.cell_iterator():
         if cell.is_protected:
             continue
-        pool.append(cell)
+        pool[cell] = None
 
     cell_count = len(pool)
     cell = random_cell(pool, rng)
     maze.add(cell)
     if save_step:
             steps.append(Step(cell.x, cell.y, None))
-    pool.remove(cell)
+    del pool[cell]
 
     for neighbour in get_neighbours(cell):
         if neighbour in pool:
-            frontier.append(neighbour)
-            pool.remove(neighbour)
+            frontier[neighbour] = None
+            del pool[neighbour]
 
     while len(maze) != cell_count:
         cell = random_cell(frontier, rng)
         wall = connect_cells(cell, maze, rng)
         maze.add(cell)
-        frontier.remove(cell)
+        del frontier[cell]
         if save_step:
             steps.append(Step(cell.x, cell.y, wall))
         for neighbour in get_neighbours(cell):
             if neighbour in pool:
-                frontier.append(neighbour)
-                pool.remove(neighbour)
+                frontier[neighbour] = None
+                del pool[neighbour]
 
     return map, steps
