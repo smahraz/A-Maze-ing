@@ -177,9 +177,17 @@ class Renderer:
         if cell.x == 0:
             self.render_wall(0, cell.y, 'W')
             self.render_corner(cell, 'SW')
+        elif cell.west.is_closed:
+            self.render_wall(cell.x, cell.y, 'W')
+        else:
+            self.render_wall(cell.x, cell.y, 'W', clear=True)
         if cell.y == 0:
             self.render_wall(cell.x, 0, 'N')
             self.render_corner(cell, 'NW')
+        elif cell.north.is_closed:
+            self.render_wall(cell.x, cell.y, 'N')
+        else:
+            self.render_wall(cell.x, cell.y, 'N', clear=True)
         if cell.east.is_closed or cell.x == self.maze.width - 1:
             self.render_wall(cell.x, cell.y, 'E')
             self.render_corner(cell, 'NE')
