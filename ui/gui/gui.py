@@ -10,6 +10,7 @@ class Keys:
     R = 0x72
     A = 0x61
     C = 0x63
+    P = 0x70
 
 
 class Gui:
@@ -23,6 +24,7 @@ class Gui:
         self.init_mlx()
 
         self.animate = False
+        self.path = False
         self.start_animation = False
         self.steps: list[Step] = []
         self.steps_done: list[Step] = []
@@ -52,7 +54,7 @@ class Gui:
         self._window = self._mlx.mlx_new_window(
             self._mlx_ptr,
             self.renderer.width,
-            self.renderer.height,
+            self.renderer.height + self.renderer.info_height,
             "A-Maze-ing"
         )
         self.renderer.init_mlx(
@@ -95,6 +97,14 @@ class Gui:
 
             case Keys.A:
                 self.animate = not self.animate
+                self.renderer.animate = self.animate
+                self.renderer.render_info()
+
+            case Keys.P:
+                self.path = not self.path
+                self.renderer.path = self.path
+                self.renderer.render_info()
+
             case Keys.C:
                 self.renderer._wall_color = Color.get_random()
                 self.renderer._pattern_color = Color.get_random()
@@ -112,13 +122,7 @@ class Gui:
     def expose_hook(self, param: Any) -> None:
         self.renderer.render_bg()
         self.renderer.render_maze()
-
-        self._mlx.mlx_put_image_to_window(
-            self._mlx_ptr,
-            self._window,
-            self.renderer._maze_image.image,
-            self.renderer.border, self.renderer.border
-        )
+        self.renderer.render_info()
 
     def loop_hook(self, param: Any) -> None:
         if self.start_animation:
