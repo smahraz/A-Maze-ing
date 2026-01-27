@@ -5,12 +5,12 @@ from ._color import Color
 
 class Frame:
     @staticmethod
-    def draw(maze: Maze, cell_bg: Callable | None = None) -> None:
+    def draw(maze: Maze, cell_bg: Callable[[Cell], str] | None = None) -> None:
         print("\033[H", end="")
         for row in maze.map:
             if not row[0].above_cell:
                 Frame._render_ceiling(row)
-            Frame._vertical(row, cell_bg)
+            Frame._verti(row, cell_bg)
             Frame._horizontal(row)
 
     @staticmethod
@@ -18,7 +18,7 @@ class Frame:
         print("\033[2J", end="")
 
     @staticmethod
-    def _vertical(row: list[Cell], cell_bg: Callable | None):
+    def _verti(row: list[Cell], cell_bg: Callable[[Cell], str] | None) -> None:
         Frame._print("║")
         for cell in row:
             if not cell.is_protected:
@@ -34,7 +34,7 @@ class Frame:
         print()
 
     @staticmethod
-    def _horizontal(row: list[Cell]):
+    def _horizontal(row: list[Cell]) -> None:
         if not row[0].left_cell:
             if row[0].below_cell:
                 Frame._print("╠" if row[0].south.is_closed else "║")
@@ -96,5 +96,5 @@ class Frame:
         print(Color.DEFAULT)
 
     @staticmethod
-    def _print(*args, end=Color.DEFAULT) -> None:
+    def _print(*args: str, end: str = Color.DEFAULT) -> None:
         print(Color.bg, Color.wall, *args, end=end, sep="")

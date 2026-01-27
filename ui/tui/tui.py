@@ -1,4 +1,4 @@
-from mazegen import MazeGenerator, Maze
+from mazegen import MazeGenerator, Maze, Cell
 from ._display import Frame
 from ._color import Color
 from time import sleep
@@ -10,7 +10,7 @@ class Tui:
         self.animation = True
 
     def animate(self) -> None:
-        def cell_bg(cell) -> str:
+        def cell_bg(cell: Cell) -> str:
             if (cell.x == s.x and cell.y == s.y) or cell in last_cells:
                 return Color.GREEN_BG
 
