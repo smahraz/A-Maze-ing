@@ -190,13 +190,13 @@ class Renderer:
     def render_protected(self) -> None:
         for cell in self.protected_cells:
             self.color_cell(cell, self._pattern_color)
-            if not cell.above_cell.is_protected:
+            if cell.above_cell and not cell.above_cell.is_protected:
                 self.render_wall(cell, 'N')
-            if not cell.right_cell.is_protected:
+            if cell.right_cell and not cell.right_cell.is_protected:
                 self.render_wall(cell, 'E')
-            if not cell.left_cell.is_protected:
+            if cell.left_cell and not cell.left_cell.is_protected:
                 self.render_wall(cell, 'W')
-            if not cell.below_cell.is_protected:
+            if cell.below_cell and not cell.below_cell.is_protected:
                 self.render_wall(cell, 'S')
             self.render_corner(cell, 'NW')
             self.render_corner(cell, 'SW')
@@ -285,10 +285,10 @@ class Renderer:
             self.border + self.info_height
         )
 
-    def render_info(self):
+    def render_info(self) -> None:
         button_a = self.button_a_on if self.animate else self.button_a
         button_p = self.button_p_on if self.path else self.button_p
-        info_items = [
+        info_items: list[dict[str, Any]] = [
             {'button': self.button_esc, 'text': self.text_exit,
              'text_offset_x': 21, 'text_offset_y': 50},
             {'button': self.button_r, 'text': self.text_regen,
