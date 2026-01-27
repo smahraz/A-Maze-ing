@@ -31,3 +31,8 @@ class Image:
             self.image,
             x, y
         )
+
+    def clear(self, color: Color) -> None:
+        for y in range(self.height):
+            for x in range(self.width):
+                self.put_pixel(x, y, color)
