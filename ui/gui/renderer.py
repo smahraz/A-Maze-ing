@@ -61,19 +61,30 @@ class Renderer:
             self.width,
             self.height + self.info_height
         )
-        self.button_a = Png(self._mlx, self._mlx_ptr, "png/button_a.png")
-        self.button_a_on = Png(self._mlx, self._mlx_ptr, "png/button_a_on.png")
-        self.button_r = Png(self._mlx, self._mlx_ptr, "png/button_r.png")
-        self.button_c = Png(self._mlx, self._mlx_ptr, "png/button_c.png")
-        self.button_p = Png(self._mlx, self._mlx_ptr, "png/button_p.png")
-        self.button_p_on = Png(self._mlx, self._mlx_ptr, "png/button_p_on.png")
-        self.button_esc = Png(self._mlx, self._mlx_ptr, "png/button_esc.png")
-        self.text_exit = Png(self._mlx, self._mlx_ptr, "png/text_exit.png")
-        self.text_regen = Png(self._mlx, self._mlx_ptr, "png/text_regen.png")
-        self.text_path = Png(self._mlx, self._mlx_ptr, "png/text_path.png")
-        self.text_colors = Png(self._mlx, self._mlx_ptr, "png/text_colors.png")
+        self.button_a = Png(
+            self._mlx, self._mlx_ptr, "assets/button_a.png")
+        self.button_a_on = Png(
+            self._mlx, self._mlx_ptr, "assets/button_a_on.png")
+        self.button_r = Png(
+            self._mlx, self._mlx_ptr, "assets/button_r.png")
+        self.button_c = Png(
+            self._mlx, self._mlx_ptr, "assets/button_c.png")
+        self.button_p = Png(
+            self._mlx, self._mlx_ptr, "assets/button_p.png")
+        self.button_p_on = Png(
+            self._mlx, self._mlx_ptr, "assets/button_p_on.png")
+        self.button_esc = Png(
+            self._mlx, self._mlx_ptr, "assets/button_esc.png")
+        self.text_exit = Png(
+            self._mlx, self._mlx_ptr, "assets/text_exit.png")
+        self.text_regen = Png(
+            self._mlx, self._mlx_ptr, "assets/text_regen.png")
+        self.text_path = Png(
+            self._mlx, self._mlx_ptr, "assets/text_path.png")
+        self.text_colors = Png(
+            self._mlx, self._mlx_ptr, "assets/text_colors.png")
         self.text_animation = Png(
-            self._mlx, self._mlx_ptr, "png/text_animation.png")
+            self._mlx, self._mlx_ptr, "assets/text_animation.png")
 
     def render_bg(self) -> None:
         for x in range(self.width):
