@@ -13,9 +13,6 @@ class Png(Image):
             mlx_ptr, file_name
         )
 
-    def put_pixel(self) -> None:
-        pass
-
 
 class Renderer:
     def __init__(self, maze: Maze, cell_size: int, stroke: int, border: int):
@@ -55,6 +52,7 @@ class Renderer:
             self.width - self.border * 2,
             self.height - self.border * 2
         )
+        self._maze_image.clear(self._bg_color)
         self._bg_image = Image(
             self._mlx,
             self._mlx_ptr,
@@ -312,7 +310,8 @@ class Renderer:
             y_button = self.border
             y_text = self.border + item['text_offset_y']
             item['button'].put_to_win(self._window, x_pos, y_button)
-            item['text'].put_to_win(self._window, x_pos + item['text_offset_x'], y_text)
+            item['text'].put_to_win(
+                self._window, x_pos + item['text_offset_x'], y_text)
 
     def render_animation_step(self, steps: list[Step]) -> bool:
         if not steps:
