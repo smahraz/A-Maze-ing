@@ -150,10 +150,14 @@ class Renderer:
     def render_protected(self):
         for cell in self.protected_cells:
             self.color_cell(cell, self._pattern_color)
-            self.render_wall(cell, 'N')
-            self.render_wall(cell, 'E')
-            self.render_wall(cell, 'W')
-            self.render_wall(cell, 'S')
+            if not cell.above_cell.is_protected:
+                self.render_wall(cell, 'N')
+            if not cell.right_cell.is_protected:
+                self.render_wall(cell, 'E')
+            if not cell.left_cell.is_protected:
+                self.render_wall(cell, 'W')
+            if not cell.below_cell.is_protected:
+                self.render_wall(cell, 'S')
             self.render_corner(cell, 'NW')
             self.render_corner(cell, 'SW')
             self.render_corner(cell, 'NE')
