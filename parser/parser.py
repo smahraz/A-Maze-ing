@@ -54,10 +54,10 @@ class Options:
             raise ParseError("Missing mandatory key: OUTPUT_FILE")
         if self.perfect is None:
             raise ParseError("Missing mandatory key: PERFECT")
-        if self.width < 0:
-            raise ValueError("Invalid WIDTH")
-        if self.height < 0:
-            raise ValueError("Invalid HEIGHT")
+        if self.width < 9:
+            raise ValueError("Invalid WIDTH (WIDTH > 8)")
+        if self.height < 7:
+            raise ValueError("Invalid HEIGHT (HEIGHT > 6)")
         if self.entry.x >= self.width or self.entry.y >= self.height\
                 or self.entry.x < 0 or self.entry.y < 0:
             raise ValueError("Invalid ENTRY coordinates")
