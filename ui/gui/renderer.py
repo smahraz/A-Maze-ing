@@ -5,6 +5,18 @@ from .image import Image
 from typing import Any
 
 
+class Png(Image):
+    def __init__(self, mlx: Mlx, mlx_ptr: Any, file_name: str):
+        self._mlx = mlx
+        self._mlx_ptr = mlx_ptr
+        self.image, self.height, self.width = mlx.mlx_png_file_to_image(
+            mlx_ptr, file_name
+        )
+
+    def put_pixel(self) -> None:
+        pass
+
+
 class Renderer:
     def __init__(self, maze: Maze, cell_size: int, stroke: int, border: int):
         self.maze = maze
@@ -13,7 +25,6 @@ class Renderer:
         self.border = border
         self._maze_image: Image
         self._bg_image: Image
-        self._mlx: Mlx
         self._mlx_ptr = None
         self._window = None
         self._bg_color = Color(45, 42, 64)
@@ -21,12 +32,18 @@ class Renderer:
         self._cursor_color = Color(255, 0, 0)
         self._pattern_color = Color(0, 0, 255)
         self._unvisited_color = Color(142, 135, 191)
-        self.width = cell_size * maze.width + border * 2 + stroke
+        maze_width = cell_size * maze.width + border * 2 + stroke
+        min_width = 1000
+        self.width = max(maze_width, min_width)
+        self.maze_x_offset = (self.width - maze_width) // 2
         self.height = cell_size * maze.height + border * 2 + stroke
         self.cursors: list[Cell] = []
         self.protected_cells: list[Cell] = []
+        self.info_height: int = 100
+        self.animate = False
+        self.path = False
 
-    def init_mlx(self, mlx: Any, mlx_ptr: Any, window: Any) -> None:
+    def init_mlx(self, mlx: Mlx, mlx_ptr: Any, window: Any) -> None:
         self._mlx = mlx
         self._mlx_ptr = mlx_ptr
         self._window = window
@@ -42,17 +59,28 @@ class Renderer:
             self._mlx,
             self._mlx_ptr,
             self.width,
-            self.height
+            self.height + self.info_height
         )
+        self.button_a = Png(self._mlx, self._mlx_ptr, "png/button_a.png")
+        self.button_a_on = Png(self._mlx, self._mlx_ptr, "png/button_a_on.png")
+        self.button_r = Png(self._mlx, self._mlx_ptr, "png/button_r.png")
+        self.button_c = Png(self._mlx, self._mlx_ptr, "png/button_c.png")
+        self.button_p = Png(self._mlx, self._mlx_ptr, "png/button_p.png")
+        self.button_p_on = Png(self._mlx, self._mlx_ptr, "png/button_p_on.png")
+        self.button_esc = Png(self._mlx, self._mlx_ptr, "png/button_esc.png")
+        self.text_exit = Png(self._mlx, self._mlx_ptr, "png/text_exit.png")
+        self.text_regen = Png(self._mlx, self._mlx_ptr, "png/text_regen.png")
+        self.text_path = Png(self._mlx, self._mlx_ptr, "png/text_path.png")
+        self.text_colors = Png(self._mlx, self._mlx_ptr, "png/text_colors.png")
+        self.text_animation = Png(
+            self._mlx, self._mlx_ptr, "png/text_animation.png")
 
     def render_bg(self) -> None:
         for x in range(self.width):
-            for y in range(self.height):
+            for y in range(self.height + self.info_height):
                 self._bg_image.put_pixel(x, y, self._bg_color)
-        self._mlx.mlx_put_image_to_window(
-            self._mlx_ptr,
+        self._bg_image.put_to_win(
             self._window,
-            self._bg_image.image,
             0, 0
         )
 
@@ -242,12 +270,38 @@ class Renderer:
             self.render_cell(cell)
         self.render_protected()
 
-        self._mlx.mlx_put_image_to_window(
-            self._mlx_ptr,
+        self._maze_image.put_to_win(
             self._window,
-            self._maze_image.image,
-            self.border, self.border
+            self.border + self.maze_x_offset,
+            self.border + self.info_height
         )
+
+    def render_info(self):
+        button_a = self.button_a_on if self.animate else self.button_a
+        button_p = self.button_p_on if self.path else self.button_p
+        info_items = [
+            {'button': self.button_esc, 'text': self.text_exit,
+             'text_offset_x': 21, 'text_offset_y': 50},
+            {'button': self.button_r, 'text': self.text_regen,
+             'text_offset_x': -50, 'text_offset_y': 50},
+            {'button': button_a, 'text': self.text_animation,
+             'text_offset_x': -38, 'text_offset_y': 50},
+            {'button': self.button_c, 'text': self.text_colors,
+             'text_offset_x': -62, 'text_offset_y': 50},
+            {'button': button_p, 'text': self.text_path,
+             'text_offset_x': -5, 'text_offset_y': 50},
+        ]
+
+        available_width = self.width - 2 * self.border
+        num_items = len(info_items)
+        spacing = available_width // (num_items + 1) if num_items > 0 else 0
+
+        for i, item in enumerate(info_items):
+            x_pos = self.border + spacing * (i + 1) - 50
+            y_button = self.border
+            y_text = self.border + item['text_offset_y']
+            item['button'].put_to_win(self._window, x_pos, y_button)
+            item['text'].put_to_win(self._window, x_pos + item['text_offset_x'], y_text)
 
     def render_animation_step(self, steps: list[Step]) -> bool:
         if not steps:
@@ -260,11 +314,10 @@ class Renderer:
             self.cursors.append(self.maze.map[s.y][s.x])
         self.render_cursor(self.maze.map[step.y][step.x], clear=True)
 
-        self._mlx.mlx_put_image_to_window(
-            self._mlx_ptr,
+        self._maze_image.put_to_win(
             self._window,
-            self._maze_image.image,
-            self.border, self.border
+            self.border + self.maze_x_offset,
+            self.border + self.info_height
         )
         return False
 
