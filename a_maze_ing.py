@@ -15,7 +15,8 @@ if __name__ == "__main__":
         exit(1)
     print(options)
     maze_gen = MazeGenerator(
-        options.width, options.height, options.algorithm, options.seed
+        options.width, options.height, options.algorithm, options.seed,
+        (options.entry.x, options.entry.y), (options.exit.x, options.exit.y)
     )
     match options.interface:
         case "gui":

@@ -1,17 +1,21 @@
 from random import Random, randint
-from mazegen import Maze, Step
+from mazegen import Maze, Step, Cell
 from mazegen.algo import DFS, PRIM
+from .path_finder import path_finder
 
 
 class MazeGenerator:
     def __init__(
-            self, width: int, height: int, algorithm: str, seed: int) -> None:
-        self.maze = Maze(width, height)
+            self, width: int, height: int, algorithm: str, seed: int,
+            entry: tuple[int, int], exit: tuple[int, int]) -> None:
+        self.maze = Maze(width, height, entry, exit)
         self.algorithm = algorithm
         self.seed = seed
 
     def reseed(self) -> None:
-        self.maze = Maze(self.maze.width, self.maze.height)
+        self.maze = Maze(self.maze.width, self.maze.height,
+                         (self.maze.entry.x, self.maze.entry.y),
+                         (self.maze.exit.x, self.maze.exit.y))
         self.seed = randint(0, 999_999_999)
 
     def generate_maze(self) -> Maze:
@@ -30,3 +34,7 @@ class MazeGenerator:
             case "PRIM":
                 output = PRIM(self.maze, save_step, Random(self.seed))
         return output
+
+    @staticmethod
+    def generate_path(maze: Maze) -> list[tuple[Cell, str]]:
+        return path_finder(maze)
