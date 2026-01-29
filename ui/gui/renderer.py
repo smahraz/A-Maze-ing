@@ -29,13 +29,14 @@ class Renderer:
         self._cursor_color = Color(255, 0, 0)
         self._pattern_color = Color(0, 0, 255)
         self._unvisited_color = Color(142, 135, 191)
+        self._path_color = Color(255, 0, 255)
         maze_width = cell_size * maze.width + border * 2 + stroke
         min_width = 1000
         self.width = max(maze_width, min_width)
         self.maze_x_offset = (self.width - maze_width) // 2
         self.height = cell_size * maze.height + border * 2 + stroke
         self.cursors: list[Cell] = []
-        self.protected_cells: list[Cell] = []
+        self.protected_cells: set[Cell] = set()
         self.info_height: int = 100
         self.animate = False
         self.path = False
@@ -93,8 +94,7 @@ class Renderer:
             0, 0
         )
 
-    def render_wall(self, cell: Cell, dir: str, clear: bool = False) -> None:
-        color = self._wall_color if not clear else self._bg_color
+    def render_wall(self, cell: Cell, dir: str, color: Color) -> None:
         x = cell.x * self.cell_size
         y = cell.y * self.cell_size
 
@@ -135,8 +135,7 @@ class Renderer:
                             color
                         )
 
-    def render_corner(self, cell: Cell, pos: str, clear: bool = False) -> None:
-        color = self._wall_color if not clear else self._bg_color
+    def render_corner(self, cell: Cell, pos: str, color: Color) -> None:
         x = cell.x * self.cell_size
         y = cell.y * self.cell_size
         match pos:
@@ -174,89 +173,102 @@ class Renderer:
                         )
 
     def color_cell(self, cell: Cell, color: Color) -> None:
-        x = cell.x * self.cell_size
-        y = cell.y * self.cell_size
+        x = cell.x * self.cell_size + self.stroke
+        y = cell.y * self.cell_size + self.stroke
 
-        for w in range(self.cell_size + self.stroke):
-            for h in range(self.cell_size + self.stroke):
+        for w in range(self.cell_size - self.stroke):
+            for h in range(self.cell_size - self.stroke):
                 self._maze_image.put_pixel(x + w, y + h, color)
 
-    def color_cells(self, color: Color) -> None:
+    def color_cells_walls(self, color: Color) -> None:
         for cell in self.maze.cell_iterator():
-            if cell.is_protected:
-                continue
-            self.color_cell(cell, color)
+            if cell != self.maze.entry and cell != self.maze.exit:
+                self.color_cell(cell, color)
+            self.render_wall(cell, 'N', color)
+            self.render_wall(cell, 'S', color)
+            self.render_wall(cell, 'E', color)
+            self.render_wall(cell, 'W', color)
+            self.render_corner(cell, 'NE', color)
+            self.render_corner(cell, 'NW', color)
+            self.render_corner(cell, 'SE', color)
+            self.render_corner(cell, 'SW', color)
 
     def render_protected(self) -> None:
         for cell in self.protected_cells:
             self.color_cell(cell, self._pattern_color)
-            if cell.above_cell and not cell.above_cell.is_protected:
-                self.render_wall(cell, 'N')
-            if cell.right_cell and not cell.right_cell.is_protected:
-                self.render_wall(cell, 'E')
-            if cell.left_cell and not cell.left_cell.is_protected:
-                self.render_wall(cell, 'W')
-            if cell.below_cell and not cell.below_cell.is_protected:
-                self.render_wall(cell, 'S')
-            self.render_corner(cell, 'NW')
-            self.render_corner(cell, 'SW')
-            self.render_corner(cell, 'NE')
-            self.render_corner(cell, 'SE')
+            self.render_wall(cell, 'N', self._wall_color)
+            self.render_wall(cell, 'S', self._wall_color)
+            self.render_wall(cell, 'E', self._wall_color)
+            self.render_wall(cell, 'W', self._wall_color)
+            self.render_corner(cell, 'NE', self._wall_color)
+            self.render_corner(cell, 'NW', self._wall_color)
+            self.render_corner(cell, 'SE', self._wall_color)
+            self.render_corner(cell, 'SW', self._wall_color)
+            if cell.above_cell.is_protected:
+                self.render_wall(cell, 'N', self._pattern_color)
+            if cell.below_cell.is_protected:
+                self.render_wall(cell, 'S', self._pattern_color)
+            if cell.right_cell.is_protected:
+                self.render_wall(cell, 'E', self._pattern_color)
+            if cell.left_cell.is_protected:
+                self.render_wall(cell, 'W', self._pattern_color)
 
     def render_cell(self, cell: Cell) -> None:
-        if cell.is_protected and len(self.protected_cells) < 18:
-            self.protected_cells.append(cell)
+        if cell.is_protected:
+            self.protected_cells.add(cell)
             return
         if cell.north.is_closed or not cell.above_cell:
-            self.render_wall(cell, 'N')
+            self.render_wall(cell, 'N', self._wall_color)
         else:
-            self.render_wall(cell, 'N', clear=True)
+            self.render_wall(cell, 'N', self._bg_color)
         if cell.east.is_closed or not cell.right_cell:
-            self.render_wall(cell, 'E')
+            self.render_wall(cell, 'E', self._wall_color)
         else:
-            self.render_wall(cell, 'E', clear=True)
+            self.render_wall(cell, 'E', self._bg_color)
         if cell.south.is_closed or not cell.below_cell:
-            self.render_wall(cell, 'S')
+            self.render_wall(cell, 'S', self._wall_color)
         else:
-            self.render_wall(cell, 'S', clear=True)
+            self.render_wall(cell, 'S', self._bg_color)
         if cell.west.is_closed or not cell.left_cell:
-            self.render_wall(cell, 'W')
+            self.render_wall(cell, 'W', self._wall_color)
         else:
-            self.render_wall(cell, 'W', clear=True)
+            self.render_wall(cell, 'W', self._bg_color)
 
         if (cell.north.is_closed or
-                (cell.right_cell and cell.right_cell.north.is_closed) or
+                (cell.left_cell and cell.left_cell.north.is_closed) or
                 cell.west.is_closed or
                 (cell.above_cell and cell.above_cell.west.is_closed)):
-            self.render_corner(cell, 'NW')
+            self.render_corner(cell, 'NW', self._wall_color)
         else:
-            self.render_corner(cell, 'NW', clear=True)
+            self.render_corner(cell, 'NW', self._bg_color)
+
+        if (cell.south.is_closed or
+                (cell.left_cell and cell.left_cell.south.is_closed) or
+                cell.west.is_closed or
+                (cell.below_cell and cell.below_cell.west.is_closed)):
+            self.render_corner(cell, 'SW', self._wall_color)
+        else:
+            self.render_corner(cell, 'SW', self._bg_color)
 
         if (cell.north.is_closed or
                 (cell.left_cell and cell.left_cell.north.is_closed) or
                 cell.east.is_closed or
                 (cell.above_cell and cell.above_cell.east.is_closed)):
-            self.render_corner(cell, 'NE')
+            self.render_corner(cell, 'NE', self._wall_color)
         else:
-            self.render_corner(cell, 'NE', clear=True)
-
-        if (cell.south.is_closed or
-                (cell.right_cell and cell.right_cell.south.is_closed) or
-                cell.west.is_closed or
-                (cell.below_cell and cell.below_cell.west.is_closed)):
-            self.render_corner(cell, 'SW')
-        else:
-            self.render_corner(cell, 'SW', clear=True)
+            self.render_corner(cell, 'NE', self._bg_color)
 
         if (cell.south.is_closed or
                 (cell.left_cell and cell.left_cell.south.is_closed) or
                 cell.east.is_closed or
                 (cell.below_cell and cell.below_cell.east.is_closed)):
-            self.render_corner(cell, 'SE')
+            self.render_corner(cell, 'SE', self._wall_color)
         else:
-            self.render_corner(cell, 'SE', clear=True)
+            self.render_corner(cell, 'SE', self._bg_color)
 
     def render_cursor(self, cell: Cell, clear: bool = False) -> None:
+        if cell == self.maze.entry or cell == self.maze.exit:
+            return
         color = self._cursor_color if not clear else self._bg_color
         base_x = cell.x * self.cell_size + self.stroke
         base_y = cell.y * self.cell_size + self.stroke
@@ -278,7 +290,11 @@ class Renderer:
         for cell in self.maze.cell_iterator():
             self.render_cell(cell)
         self.render_protected()
+        self.color_cell(self.maze.entry, Color(0, 255, 0))
+        self.color_cell(self.maze.exit, Color(255, 0, 0))
+        self.display_maze()
 
+    def display_maze(self) -> None:
         self._maze_image.put_to_win(
             self._window,
             self.border + self.maze_x_offset,
@@ -324,14 +340,19 @@ class Renderer:
             self.cursors.append(self.maze.map[s.y][s.x])
         self.render_cursor(self.maze.map[step.y][step.x], clear=True)
 
-        self._maze_image.put_to_win(
-            self._window,
-            self.border + self.maze_x_offset,
-            self.border + self.info_height
-        )
+        self.display_maze()
         return False
 
     def clear_cursors(self) -> None:
         for cursor in self.cursors:
             self.render_cursor(cursor, clear=True)
         self.cursors = []
+
+    def render_path(self, path: list[tuple[Cell, str]], clear=False) -> None:
+        color = self._bg_color if clear else self._path_color
+        for cell, dir in path:
+            if cell != self.maze.entry:
+                self.color_cell(cell, color)
+            self.render_wall(cell, dir, color)
+
+        self.display_maze()
