@@ -43,27 +43,29 @@ class Options:
 
     def check(self) -> None:
         if self.width is None:
-            raise ParseError("Missing mandatory key: WIDTH")
+            raise ParseError("Missing mandatory key: Width")
         if self.height is None:
-            raise ParseError("Missing mandatory key: HEIGHT")
+            raise ParseError("Missing mandatory key: Height")
         if self.entry is None:
-            raise ParseError("Missing mandatory key: ENTRY")
+            raise ParseError("Missing mandatory key: Entry")
         if self.exit is None:
-            raise ParseError("Missing mandatory key: EXIT")
+            raise ParseError("Missing mandatory key: Exit")
         if self.output_file is None:
-            raise ParseError("Missing mandatory key: OUTPUT_FILE")
+            raise ParseError("Missing mandatory key: Output_file")
         if self.perfect is None:
-            raise ParseError("Missing mandatory key: PERFECT")
+            raise ParseError("Missing mandatory key: Perfect")
         if self.width < 9:
-            raise ValueError("Invalid WIDTH (WIDTH > 8)")
+            raise ValueError("Invalid Width (Width > 8)")
         if self.height < 7:
-            raise ValueError("Invalid HEIGHT (HEIGHT > 6)")
+            raise ValueError("Invalid Height (Height > 6)")
         if self.entry.x >= self.width or self.entry.y >= self.height\
                 or self.entry.x < 0 or self.entry.y < 0:
-            raise ValueError("Invalid ENTRY coordinates")
+            raise ValueError("Invalid Entry coordinates")
         if self.exit.x >= self.width or self.exit.y >= self.height\
                 or self.exit.x < 0 or self.exit.y < 0:
-            raise ValueError("Invalid EXIT coordinates")
+            raise ValueError("Invalid Exit coordinates")
+        if self.entry.x == self.exit.x and self.entry.y == self.exit.y:
+            raise ValueError("Entry and Exit can't be on the same cell")
 
     def add_option(self, key: str, value: str) -> None:
         value = value.strip()
