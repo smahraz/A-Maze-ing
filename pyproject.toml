@@ -1,10 +1,30 @@
 [project]
-name = "a-maze-ing"
+name = "mazegen"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = [
+dependencies = []
+
+
+[build-system]
+  requires = ["setuptools"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+# include = ["mazegen", "mazegen.*"]
+exclude = ["ui*", "parser*"]
+
+[dependency-groups]
+dev = [
     "flake8>=7.3.0",
     "mypy>=1.19.1",
 ]
+
+[[build-system.authors]]
+name = "smahraz"
+email = "smahraz@student.1337.ma"
+
+[[build-system.authors]]
+name = "smakkass"
+email = "smakkass@student.1337.ma"
