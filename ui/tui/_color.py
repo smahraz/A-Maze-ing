@@ -1,14 +1,13 @@
 import random
 
 
-
-
 class Color:
     BLACK_BG = "\033[40m"
     RED_BG = "\033[41m"
     WHITE_BG = "\033[47m"
     GREEN_BG = "\033[42m"
 
+    BLACK = "\033[30m"
     WHITE = "\033[37m"
     GREEN = "\033[32m"
     PURPLE = "\033[35m"

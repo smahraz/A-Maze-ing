@@ -10,7 +10,7 @@ class Frame:
         for row in maze.map:
             if not row[0].above_cell:
                 Frame._render_ceiling(row)
-            Frame._verti(row, cell_bg)
+            Frame._verti(row, cell_bg, (maze.entry, maze.exit))
             Frame._horizontal(row)
 
     @staticmethod
@@ -18,11 +18,19 @@ class Frame:
         print("\033[2J", end="")
 
     @staticmethod
-    def _verti(row: list[Cell], cell_bg: Callable[[Cell], str] | None) -> None:
+    def _verti(
+        row: list[Cell],
+        cell_bg: Callable[[Cell], str] | None,
+        entry_exit: tuple[Cell, Cell]
+    ) -> None:
         Frame._print("║")
         for cell in row:
             if not cell.is_protected:
-                if cell_bg:
+                if cell == entry_exit[0]:
+                    Frame._print(Color.RED_BG, "EN")
+                elif cell == entry_exit[1]:
+                    Frame._print(Color.WHITE_BG, Color.BLACK, "EX")
+                elif cell_bg:
                     Frame._print(cell_bg(cell), " " * 2)
                 else:
                     Frame._print(" " * 2)
