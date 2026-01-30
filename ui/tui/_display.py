@@ -27,7 +27,7 @@ class Frame:
         for cell in row:
             if not cell.is_protected:
                 if cell == entry_exit[0]:
-                    Frame._print(Color.RED_BG, "EN")
+                    Frame._print(Color.RED_BG, Color.WHITE, "EN")
                 elif cell == entry_exit[1]:
                     Frame._print(Color.WHITE_BG, Color.BLACK, "EX")
                 elif cell_bg:

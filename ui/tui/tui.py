@@ -14,7 +14,7 @@ class Tui:
             if (cell.x == s.x and cell.y == s.y) or cell in last_cells:
                 return Color.GREEN_BG
 
-            return Color.new_cell_bg if cell not in passed_by else ''
+            return Color.new_cell_bg if cell not in passed_by else ""
 
         steps = self.mazegen.generate_steps()
 
@@ -42,8 +42,14 @@ class Tui:
             sleep(0.009)
         Frame.draw(maze)
 
-    def display(self) -> None:
-        if self.animation:
+    def display(self, path: list[Cell | None] = []) -> None:
+        def cell_bg(cell: Cell) -> str:
+            return Color.new_cell_bg if cell in path else ''
+
+        if path:
+            Frame.clear()
+            Frame.draw(self.mazegen.maze, cell_bg)
+        elif self.animation:
             self.animate()
         else:
             Frame.clear()
@@ -54,6 +60,7 @@ class Tui:
         Frame.draw(self.mazegen.generate_maze())
         self._print_options()
 
+        path: list[Cell | None] = []
         while True:
             match input(">>"):
                 case "1":
@@ -62,6 +69,17 @@ class Tui:
                     Color.change()
                 case "3":
                     self.animation = not self.animation
+                case "4":
+                    if path and path[0] is not None:
+                        path = [None]
+                    else:
+                        path = [
+                            step[0] for step in
+                            self.mazegen.generate_path(self.mazegen.maze)
+                        ]
+                    self.display(path)
+                    self._print_options()
+                    continue
                 case "0":
                     break
                 case _:
@@ -69,6 +87,7 @@ class Tui:
 
             self.display()
             self._print_options()
+            path = []
 
     def _print_options(self) -> None:
         print("1. Regenerate Maze")
