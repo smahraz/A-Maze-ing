@@ -24,7 +24,9 @@ class Tui:
 
         maze = Maze(
             self.mazegen.maze.width,
-            self.mazegen.maze.height
+            self.mazegen.maze.height,
+            (self.mazegen.maze.entry.x, self.mazegen.maze.entry.y),
+            (self.mazegen.maze.exit.x, self.mazegen.maze.exit.y)
         )
 
         Frame.clear()

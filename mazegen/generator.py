@@ -28,12 +28,9 @@ class MazeGenerator:
         return self._generate()
 
     def _generate(self, save_step: bool = True) -> tuple[Maze, list[Step]]:
-        match self.algorithm:
-            case "DFS":
-                output = DFS(self.maze, save_step, Random(self.seed))
-            case "PRIM":
-                output = PRIM(self.maze, save_step, Random(self.seed))
-        return output
+        if self.algorithm == "DFS":
+            return DFS(self.maze, save_step, Random(self.seed))
+        return PRIM(self.maze, save_step, Random(self.seed))
 
     @staticmethod
     def generate_path(maze: Maze) -> list[tuple[Cell, str]]:
