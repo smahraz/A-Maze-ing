@@ -14,7 +14,7 @@ class Tui:
             if (cell.x == s.x and cell.y == s.y) or cell in last_cells:
                 return Color.GREEN_BG
 
-            return Color.WHITE_BG if cell not in passed_by else ''
+            return Color.new_cell_bg if cell not in passed_by else ''
 
         steps = self.mazegen.generate_steps()
 

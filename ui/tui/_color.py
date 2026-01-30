@@ -1,3 +1,6 @@
+import random
+
+
 
 
 class Color:
@@ -12,21 +15,16 @@ class Color:
     RED = "\033[31m"
 
     DEFAULT = "\033[0m"
+
     protected_cell = RED_BG
     wall = WHITE
     bg = BLACK_BG
+    new_cell_bg = WHITE_BG
 
-    _color_op: int = 1
+    _color_range = list(range(31, 38)) + list(range(91, 98))
 
     @classmethod
     def change(cls) -> None:
-        if cls._color_op > 3:
-            cls._color_op = 0
-
-        cls.wall = [
-            Color.WHITE,
-            Color.GREEN,
-            Color.RED,
-            Color.PURPLE
-        ][cls._color_op]
-        cls._color_op += 1
+        color = random.choice(cls._color_range)
+        cls.wall = f"\033[{color}m"
+        cls.new_cell_bg = f"\033[{color % 10 + 40}m"
