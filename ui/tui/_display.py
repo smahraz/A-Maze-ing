@@ -34,7 +34,10 @@ class Frame:
                 elif cell in path_cell:
                     Frame._print(Color.new_cell_bg, "  ")
                 elif visited:
-                    Frame._print((cell in visited) * Color.new_cell_bg, "  ")
+                    Frame._print(
+                        Color.new_cell_bg if cell not in visited else "",
+                        "  "
+                    )
                 else:
                     Frame._print(" " * 2)
             else:
