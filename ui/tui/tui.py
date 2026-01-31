@@ -40,13 +40,13 @@ class Tui:
             sleep(0.009)
         Frame.draw(maze)
 
-    def display(self, path: set[Cell] = set()) -> None:
+    def display(self, path: set[Cell] = set(), animate: bool = False) -> None:
         if self.show_path or path:
             Frame.clear()
             if not self.show_path:
                 path = set()
             Frame.draw(self.mazegen.generate_maze(), path_cell=path)
-        elif self.animation:
+        elif self.animation and animate:
             self.animate()
         else:
             Frame.clear()
@@ -59,12 +59,14 @@ class Tui:
 
         self.show_path = False
         path: set = set()
+        animate: bool = False
         while True:
             match input(">>"):
                 case "1":
                     self.mazegen.reseed()
                     path = set()
                     self.show_path = False
+                    animate = True
                 case "2":
                     Color.change()
                 case "3":
@@ -81,8 +83,9 @@ class Tui:
                 case _:
                     continue
 
-            self.display(path)
+            self.display(path, animate)
             self._print_options()
+            animate = False
 
     def _print_options(self) -> None:
         print("1. Regenerate Maze")
