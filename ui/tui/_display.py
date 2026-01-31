@@ -61,7 +61,7 @@ class Frame:
             if not cell.south.is_closed and cell in path_cell:
                 Frame._print(
                     Color.new_cell_bg if cell.below_cell in path_cell else "",
-                    "═" * 2
+                    " " * 2
                 )
             else:
                 Frame._print("═" * 2 if cell.south.is_closed else " " * 2)

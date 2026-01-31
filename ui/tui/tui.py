@@ -5,6 +5,9 @@ from time import sleep
 
 
 class Tui:
+
+    show_path: bool
+
     def __init__(self, mazegen: MazeGenerator) -> None:
         self.mazegen = mazegen
         self.animation = True
@@ -37,9 +40,11 @@ class Tui:
         Frame.draw(maze)
 
     def display(self, path: set[Cell] = set()) -> None:
-        if path:
+        if self.show_path or path:
             Frame.clear()
-            Frame.draw(self.mazegen.maze, path_cell=path)
+            if not self.show_path:
+                path = set()
+            Frame.draw(self.mazegen.generate_maze(), path_cell=path)
         elif self.animation:
             self.animate()
         else:
@@ -51,34 +56,32 @@ class Tui:
         Frame.draw(self.mazegen.generate_maze())
         self._print_options()
 
-        path: list[Cell | None] = []
+        self.show_path = False
+        path: set = set()
         while True:
             match input(">>"):
                 case "1":
                     self.mazegen.reseed()
+                    path = set()
+                    self.show_path = False
                 case "2":
                     Color.change()
                 case "3":
                     self.animation = not self.animation
                 case "4":
-                    if path and path[0] is not None:
-                        path = [None]
-                    else:
+                    self.show_path = not self.show_path
+                    if not path:
                         path = {
                             step[0] for step in
                             self.mazegen.generate_path(self.mazegen.maze)
                         }
-                    self.display(path)
-                    self._print_options()
-                    continue
                 case "0":
                     break
                 case _:
                     continue
 
-            self.display()
+            self.display(path)
             self._print_options()
-            path = []
 
     def _print_options(self) -> None:
         print("1. Regenerate Maze")
