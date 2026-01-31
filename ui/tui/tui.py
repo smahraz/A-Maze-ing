@@ -11,6 +11,7 @@ class Tui:
     def __init__(self, mazegen: MazeGenerator) -> None:
         self.mazegen = mazegen
         self.animation = True
+        self.show_path = False
 
     def animate(self) -> None:
         steps = self.mazegen.generate_steps()
@@ -87,4 +88,5 @@ class Tui:
         print("1. Regenerate Maze")
         print("2. Change color")
         print(f"3. {'Enable' if not self.animation else 'Disable'} Animation")
+        print(f"4. {'Hide' if self.show_path else 'Show'} path")
         print("0. Exit")
