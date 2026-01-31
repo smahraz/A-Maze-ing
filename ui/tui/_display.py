@@ -5,13 +5,13 @@ from ._color import Color
 
 class Frame:
     @staticmethod
-    def draw(maze: Maze, cell_bg: Callable[[Cell], str] | None = None) -> None:
+    def draw(maze: Maze, visited: set[Cell] = set(), path_cell: set[Cell] = set()) -> None:
         print("\033[H", end="")
         for row in maze.map:
             if not row[0].above_cell:
                 Frame._render_ceiling(row)
-            Frame._verti(row, cell_bg, (maze.entry, maze.exit))
-            Frame._horizontal(row)
+            Frame._verti(row, visited, path_cell, (maze.entry, maze.exit))
+            Frame._horizontal(row, path_cell)
 
     @staticmethod
     def clear() -> None:
@@ -20,7 +20,8 @@ class Frame:
     @staticmethod
     def _verti(
         row: list[Cell],
-        cell_bg: Callable[[Cell], str] | None,
+        visited: set[Cell],
+        path_cell: set[Cell],
         entry_exit: tuple[Cell, Cell]
     ) -> None:
         Frame._print("║")
@@ -30,19 +31,26 @@ class Frame:
                     Frame._print(Color.RED_BG, Color.WHITE, "EN")
                 elif cell == entry_exit[1]:
                     Frame._print(Color.WHITE_BG, Color.BLACK, "EX")
-                elif cell_bg:
-                    Frame._print(cell_bg(cell), " " * 2)
+                elif cell in path_cell:
+                    Frame._print(Color.new_cell_bg, "  ")
+                elif visited:
+                    Frame._print((cell in visited) * Color.new_cell_bg, "  ")
                 else:
                     Frame._print(" " * 2)
             else:
                 Frame._print(Color.protected_cell, " " * 2)
-
-            Frame._print("║" if cell.east.is_closed else " ")
+            if not cell.east.is_closed and cell in path_cell:
+                Frame._print(
+                    Color.new_cell_bg if cell.right_cell in path_cell else "",
+                    " "
+                )
+            else:
+                Frame._print("║" if cell.east.is_closed else " ")
 
         print()
 
     @staticmethod
-    def _horizontal(row: list[Cell]) -> None:
+    def _horizontal(row: list[Cell], path_cell: set[Cell]) -> None:
         if not row[0].left_cell:
             if row[0].below_cell:
                 Frame._print("╠" if row[0].south.is_closed else "║")
@@ -50,7 +58,13 @@ class Frame:
                 Frame._print("╚")
 
         for cell in row:
-            Frame._print("═" * 2 if cell.south.is_closed else " " * 2)
+            if not cell.south.is_closed and cell in path_cell:
+                Frame._print(
+                    Color.new_cell_bg if cell.below_cell in path_cell else "",
+                    "═" * 2
+                )
+            else:
+                Frame._print("═" * 2 if cell.south.is_closed else " " * 2)
 
             join = Frame._get_join(
                 cell.east.is_closed,

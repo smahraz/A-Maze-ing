@@ -10,12 +10,6 @@ class Tui:
         self.animation = True
 
     def animate(self) -> None:
-        def cell_bg(cell: Cell) -> str:
-            if (cell.x == s.x and cell.y == s.y) or cell in last_cells:
-                return Color.GREEN_BG
-
-            return Color.new_cell_bg if cell not in passed_by else ""
-
         steps = self.mazegen.generate_steps()
 
         passed_by = set()
@@ -34,7 +28,7 @@ class Tui:
             passed_by.add(maze.map[s.y][s.x])
             Frame.draw(
                 maze.apply_step(s.x, s.y, s.wall),
-                cell_bg
+                passed_by
             )
             last_cells.append(maze.map[s.y][s.x])
             if len(last_cells) > 5:
@@ -42,13 +36,10 @@ class Tui:
             sleep(0.009)
         Frame.draw(maze)
 
-    def display(self, path: list[Cell | None] = []) -> None:
-        def cell_bg(cell: Cell) -> str:
-            return Color.new_cell_bg if cell in path else ''
-
+    def display(self, path: set[Cell] = set()) -> None:
         if path:
             Frame.clear()
-            Frame.draw(self.mazegen.maze, cell_bg)
+            Frame.draw(self.mazegen.maze, path_cell=path)
         elif self.animation:
             self.animate()
         else:
@@ -73,10 +64,10 @@ class Tui:
                     if path and path[0] is not None:
                         path = [None]
                     else:
-                        path = [
+                        path = {
                             step[0] for step in
                             self.mazegen.generate_path(self.mazegen.maze)
-                        ]
+                        }
                     self.display(path)
                     self._print_options()
                     continue
