@@ -1,11 +1,14 @@
 from mazegen import Maze, Cell
-from typing import Callable
 from ._color import Color
 
 
 class Frame:
     @staticmethod
-    def draw(maze: Maze, visited: set[Cell] = set(), path_cell: set[Cell] = set()) -> None:
+    def draw(
+            maze: Maze,
+            visited: set[Cell] = set(),
+            path_cell: set[Cell] = set()
+    ) -> None:
         print("\033[H", end="")
         for row in maze.map:
             if not row[0].above_cell:
