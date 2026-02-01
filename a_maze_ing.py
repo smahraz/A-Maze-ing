@@ -19,7 +19,6 @@ if __name__ == "__main__":
     except Exception as e:
         print("Error:", e)
         exit(1)
-    print(options)
     maze_gen = MazeGenerator(
         options.width, options.height, options.algorithm, options.seed,
         (options.entry.x, options.entry.y), (options.exit.x, options.exit.y)
