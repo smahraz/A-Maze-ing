@@ -6,10 +6,18 @@ from .path_finder import path_finder
 
 class MazeGenerator:
     def __init__(
-            self, width: int, height: int, algorithm: str, seed: int,
-            entry: tuple[int, int], exit: tuple[int, int]) -> None:
+        self,
+        width: int,
+        height: int,
+        algorithm: str,
+        perfect: bool,
+        seed: int,
+        entry: tuple[int, int],
+        exit: tuple[int, int]
+    ) -> None:
         self.maze = Maze(width, height, entry, exit)
         self.algorithm = algorithm
+        self.perfect = perfect
         self.seed = seed
 
     def reseed(self) -> None:
@@ -29,7 +37,12 @@ class MazeGenerator:
 
     def _generate(self, save_step: bool = True) -> tuple[Maze, list[Step]]:
         if self.algorithm == "DFS":
-            return DFS(self.maze, save_step, Random(self.seed))
+            return DFS(
+                self.maze,
+                save_step,
+                self.perfect,
+                Random(self.seed)
+            )
         return PRIM(self.maze, save_step, Random(self.seed))
 
     @staticmethod
