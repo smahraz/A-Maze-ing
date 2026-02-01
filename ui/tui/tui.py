@@ -52,12 +52,12 @@ class Tui:
             Frame.clear()
             if not self.show_path:
                 path = set()
-            Frame.draw(self.mazegen.generate_maze(), path_cell=path)
+            Frame.draw(self.mazegen.maze, path_cell=path)
         elif self.animation and animate:
             self.animate()
         else:
             Frame.clear()
-            Frame.draw(self.mazegen.generate_maze())
+            Frame.draw(self.mazegen.maze)
 
     def run(self) -> None:
         Frame.clear()
@@ -72,6 +72,7 @@ class Tui:
             match input(">>"):
                 case "1":
                     self.mazegen.reseed()
+                    self.mazegen.generate_maze()
                     path = set()
                     self.show_path = False
                     animate = True
