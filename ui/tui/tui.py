@@ -38,7 +38,8 @@ class Tui:
             passed_by.add(maze.map[s.y][s.x])
             Frame.draw(
                 maze.apply_step(s.x, s.y, s.wall),
-                passed_by
+                passed_by,
+                cursors=last_cells
             )
             last_cells.append(maze.map[s.y][s.x])
             if len(last_cells) > 5:

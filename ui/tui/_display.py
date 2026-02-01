@@ -7,13 +7,20 @@ class Frame:
     def draw(
             maze: Maze,
             visited: set[Cell] = set(),
-            path_cell: set[Cell] = set()
+            path_cell: set[Cell] = set(),
+            cursors: list[Cell] = []
     ) -> None:
         print("\033[H", end="")
         for row in maze.map:
             if not row[0].above_cell:
                 Frame._render_ceiling(row)
-            Frame._verti(row, visited, path_cell, (maze.entry, maze.exit))
+            Frame._verti(
+                row,
+                visited,
+                path_cell,
+                cursors,
+                (maze.entry, maze.exit)
+            )
             Frame._horizontal(row, path_cell)
 
     @staticmethod
@@ -25,12 +32,15 @@ class Frame:
         row: list[Cell],
         visited: set[Cell],
         path_cell: set[Cell],
+        cursors: list[Cell],
         entry_exit: tuple[Cell, Cell]
     ) -> None:
         Frame._print("║")
         for cell in row:
             if not cell.is_protected:
-                if cell == entry_exit[0]:
+                if cell in cursors:
+                    Frame._print(Color.GREEN_BG, "--")
+                elif cell == entry_exit[0]:
                     Frame._print(Color.RED_BG, Color.WHITE, "EN")
                 elif cell == entry_exit[1]:
                     Frame._print(Color.WHITE_BG, Color.BLACK, "EX")
