@@ -1,4 +1,5 @@
 from mazegen import MazeGenerator, Maze, Cell
+from typing import Callable
 from ._display import Frame
 from ._color import Color
 from time import sleep
@@ -8,10 +9,15 @@ class Tui:
 
     show_path: bool
 
-    def __init__(self, mazegen: MazeGenerator) -> None:
+    def __init__(
+            self,
+            mazegen: MazeGenerator,
+            write_output: Callable[[str], None]
+    ) -> None:
         self.mazegen = mazegen
         self.animation = True
         self.show_path = False
+        self._write_output = write_output
 
     def animate(self) -> None:
         steps = self.mazegen.generate_steps()
@@ -56,6 +62,7 @@ class Tui:
         Frame.clear()
         Frame.draw(self.mazegen.generate_maze())
         self._print_options()
+        self._write_output(self.mazegen.output())
 
         self.show_path = False
         path: set = set()

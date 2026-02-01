@@ -3,6 +3,12 @@ from sys import argv
 from mazegen import MazeGenerator
 from ui import Gui, Tui
 
+
+def write_output(output: str) -> None:
+    with open(output_path, 'w') as file:
+        file.write(output)
+
+
 if __name__ == "__main__":
     if len(argv) != 2:
         print(f"Usage: puthon3 {argv[0]} <config_file>")
@@ -18,8 +24,9 @@ if __name__ == "__main__":
         options.width, options.height, options.algorithm, options.seed,
         (options.entry.x, options.entry.y), (options.exit.x, options.exit.y)
     )
+    output_path = options.output_file
     match options.interface:
         case "gui":
-            Gui(maze_gen).run()
+            Gui(maze_gen, ).run()
         case "tui":
-            Tui(maze_gen).run()
+            Tui(maze_gen, write_output).run()

@@ -35,3 +35,13 @@ class MazeGenerator:
     @staticmethod
     def generate_path(maze: Maze) -> list[tuple[Cell, str]]:
         return path_finder(maze)
+
+    def output(self) -> str:
+        return (
+            self.maze.encode() +
+            "\n\n" +
+            f"{self.maze.entry.x},{self.maze.entry.x}\n" +
+            f"{self.maze.exit.x},{self.maze.exit.x}\n" +
+            "".join(_[1] for _ in self.generate_path(self.maze)) +
+            "\n"
+        )
