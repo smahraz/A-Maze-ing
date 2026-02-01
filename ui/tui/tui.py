@@ -24,7 +24,7 @@ class Tui:
 
         passed_by = set()
 
-        last_cells = []
+        last_cells: list[Cell] = []
 
         maze = Maze(
             self.mazegen.maze.width,

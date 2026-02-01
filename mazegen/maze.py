@@ -73,8 +73,13 @@ class Maze:
     entry: Cell
     exit: Cell
 
-    def __init__(self, width: int, height: int,
-                 entry: tuple[int, int], exit: tuple[int, int]) -> None:
+    def __init__(
+        self,
+        width: int,
+        height: int,
+        entry: tuple[int, int],
+        exit: tuple[int, int]
+    ) -> None:
         cls_nm = self.__class__.__name__
         assert isinstance(height, int), f"{cls_nm}.height isn't an int"
         assert isinstance(width, int), f"{cls_nm}.width isn't an int"
@@ -93,7 +98,9 @@ class Maze:
             return [row[column] for row in self.map]
 
         def set_walls(
-                cells: list[Cell], apply_func: Callable[..., None]) -> None:
+                cells: list[Cell],
+                apply_func: Callable[[Cell, Cell], None]
+        ) -> None:
             prev = None
             for cell in cells:
                 if not prev:
@@ -194,7 +201,10 @@ class Maze:
         self.protect_cell(middle_x + 1, middle_y - 2)
 
     def _set_entry_exit(
-            self, entry: tuple[int, int], exit: tuple[int, int]) -> None:
+        self,
+        entry: tuple[int, int],
+        exit: tuple[int, int]
+    ) -> None:
         if self.map[entry[1]][entry[0]].is_protected:
             raise ValueError("Invalid entry (inside pattern)")
         if self.map[exit[1]][exit[0]].is_protected:
