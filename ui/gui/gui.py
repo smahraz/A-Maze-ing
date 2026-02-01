@@ -2,7 +2,7 @@ from mlx import Mlx
 from mazegen import MazeGenerator, Maze, Step, Cell
 from .color import Color
 from .renderer import Renderer
-from typing import Any
+from typing import Any, Callable
 
 
 class Keys:
@@ -14,9 +14,10 @@ class Keys:
 
 
 class Gui:
-    def __init__(self, maze_gen: MazeGenerator):
+    def __init__(self, maze_gen: MazeGenerator, write_output: Callable):
         self.maze_gen = maze_gen
         self.map = maze_gen.generate_maze()
+        write_output(self.maze_gen.output())
         self.renderer = self._init_renderer(self.map)
 
         self._mlx = Mlx()

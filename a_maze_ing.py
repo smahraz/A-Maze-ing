@@ -5,8 +5,12 @@ from ui import Gui, Tui
 
 
 def write_output(output: str) -> None:
-    with open(output_path, 'w') as file:
-        file.write(output)
+    try:
+        with open(output_path, 'w') as file:
+            file.write(output)
+    except OSError as e:
+        print(f"Error: '{output_path}' {e.strerror}")
+        exit(1)
 
 
 if __name__ == "__main__":
@@ -26,6 +30,6 @@ if __name__ == "__main__":
     output_path = options.output_file
     match options.interface:
         case "gui":
-            Gui(maze_gen, ).run()
+            Gui(maze_gen, write_output).run()
         case "tui":
             Tui(maze_gen, write_output).run()
