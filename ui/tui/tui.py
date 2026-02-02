@@ -66,7 +66,7 @@ class Tui:
         self._write_output(self.mazegen.output())
 
         self.show_path = False
-        path: set = set()
+        path: set[Cell] = set()
         animate: bool = False
         while True:
             match input(">>"):
