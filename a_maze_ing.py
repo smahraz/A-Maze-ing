@@ -1,6 +1,6 @@
 from parser import Parser
 from sys import argv
-from mazegen import MazeGenerator
+from mazegen import MazeGenerator, MazeError
 from ui import Gui, Tui
 
 
@@ -33,8 +33,12 @@ if __name__ == "__main__":
         print("Error:", e)
         exit(1)
     output_path = options.output_file
-    match options.interface:
-        case "gui":
-            Gui(maze_gen, write_output).run()
-        case "tui":
-            Tui(maze_gen, write_output).run()
+    try:
+        match options.interface:
+            case "gui":
+                Gui(maze_gen, write_output).run()
+            case "tui":
+                Tui(maze_gen, write_output).run()
+
+    except MazeError as e:
+        print("Error:", e)

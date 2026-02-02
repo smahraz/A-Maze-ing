@@ -1,6 +1,10 @@
 from typing import Callable, Generator
 
 
+class MazeError(Exception):
+    pass
+
+
 class _Wall:
     id = 0
 
@@ -206,9 +210,9 @@ class Maze:
         exit: tuple[int, int]
     ) -> None:
         if self.map[entry[1]][entry[0]].is_protected:
-            raise ValueError("Invalid entry (inside pattern)")
+            raise MazeError("Invalid entry (inside pattern)")
         if self.map[exit[1]][exit[0]].is_protected:
-            raise ValueError("Invalid exit (inside pattern)")
+            raise MazeError("Invalid exit (inside pattern)")
         else:
             self.entry = self.map[entry[1]][entry[0]]
             self.exit = self.map[exit[1]][exit[0]]
