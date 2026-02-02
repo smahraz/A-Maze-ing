@@ -235,33 +235,33 @@ class Renderer:
             self.render_wall(cell, 'W', self._bg_color)
 
         if (cell.north.is_closed or
-                (cell.left_cell and cell.left_cell.north.is_closed) or
+                (cell.above_cell and cell.above_cell.west.is_closed) or
                 cell.west.is_closed or
-                (cell.above_cell and cell.above_cell.west.is_closed)):
+                (cell.left_cell and cell.left_cell.north.is_closed)):
             self.render_corner(cell, 'NW', self._wall_color)
         else:
             self.render_corner(cell, 'NW', self._bg_color)
 
         if (cell.south.is_closed or
-                (cell.left_cell and cell.left_cell.south.is_closed) or
+                (cell.below_cell and cell.below_cell.west.is_closed) or
                 cell.west.is_closed or
-                (cell.below_cell and cell.below_cell.west.is_closed)):
+                (cell.left_cell and cell.left_cell.south.is_closed)):
             self.render_corner(cell, 'SW', self._wall_color)
         else:
             self.render_corner(cell, 'SW', self._bg_color)
 
         if (cell.north.is_closed or
-                (cell.left_cell and cell.left_cell.north.is_closed) or
+                (cell.above_cell and cell.above_cell.east.is_closed) or
                 cell.east.is_closed or
-                (cell.above_cell and cell.above_cell.east.is_closed)):
+                (cell.right_cell and cell.right_cell.north.is_closed)):
             self.render_corner(cell, 'NE', self._wall_color)
         else:
             self.render_corner(cell, 'NE', self._bg_color)
 
         if (cell.south.is_closed or
-                (cell.left_cell and cell.left_cell.south.is_closed) or
+                (cell.below_cell and cell.below_cell.east.is_closed) or
                 cell.east.is_closed or
-                (cell.below_cell and cell.below_cell.east.is_closed)):
+                (cell.right_cell and cell.right_cell.south.is_closed)):
             self.render_corner(cell, 'SE', self._wall_color)
         else:
             self.render_corner(cell, 'SE', self._bg_color)
