@@ -82,7 +82,7 @@ class Tui:
                     self.animation = not self.animation
                 case "4":
                     self.show_path = not self.show_path
-                    if not path:
+                    if self.show_path:
                         path = {
                             step[0] for step in
                             self.mazegen.generate_path(self.mazegen.maze)
