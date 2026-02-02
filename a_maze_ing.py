@@ -20,18 +20,18 @@ if __name__ == "__main__":
     try:
         config_file = argv[1]
         options = Parser.get_options(config_file)
+        maze_gen = MazeGenerator(
+            options.width,
+            options.height,
+            options.algorithm,
+            options.perfect,
+            options.seed,
+            (options.entry.x, options.entry.y),
+            (options.exit.x, options.exit.y)
+        )
     except Exception as e:
         print("Error:", e)
         exit(1)
-    maze_gen = MazeGenerator(
-        options.width,
-        options.height,
-        options.algorithm,
-        options.perfect,
-        options.seed,
-        (options.entry.x, options.entry.y),
-        (options.exit.x, options.exit.y)
-    )
     output_path = options.output_file
     match options.interface:
         case "gui":
