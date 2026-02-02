@@ -54,7 +54,7 @@ def _open_wall_random(
 
 def _break_random(map: Maze, r: Random) -> list[Step]:
     steps: list[Step] = []
-    random_cells = map.height * map.width * 0.1
+    random_cells = map.height * map.width * 0.06
     should_not_touch: set[Cell | None] = set()
     while len(steps) < random_cells:
         cl = map.map[r.randint(0, map.height - 1)][r.randint(0, map.width - 1)]
