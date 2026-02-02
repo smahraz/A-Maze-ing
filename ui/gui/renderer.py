@@ -215,7 +215,10 @@ class Renderer:
 
     def render_cell(self, cell: Cell) -> None:
         if cell.is_protected:
-            self.protected_cells.add(cell)
+            if cell not in self.protected_cells:
+                if len(self.protected_cells) >= 18:
+                    self.protected_cells = set()
+                self.protected_cells.add(cell)
             return
         if cell.north.is_closed or not cell.above_cell:
             self.render_wall(cell, 'N', self._wall_color)
