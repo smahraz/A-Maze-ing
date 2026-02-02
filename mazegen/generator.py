@@ -21,9 +21,6 @@ class MazeGenerator:
         self.seed = seed
 
     def reseed(self) -> None:
-        self.maze = Maze(self.maze.width, self.maze.height,
-                         (self.maze.entry.x, self.maze.entry.y),
-                         (self.maze.exit.x, self.maze.exit.y))
         self.seed = randint(0, 999_999_999)
 
     def generate_maze(self) -> Maze:
@@ -36,6 +33,10 @@ class MazeGenerator:
         return self._generate()
 
     def _generate(self, save_step: bool = True) -> tuple[Maze, list[Step]]:
+        self.maze = Maze(self.maze.width, self.maze.height,
+                         (self.maze.entry.x, self.maze.entry.y),
+                         (self.maze.exit.x, self.maze.exit.y)
+                         )
         if self.algorithm == "DFS":
             return DFS(
                 self.maze,
