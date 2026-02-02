@@ -5,8 +5,7 @@ pos = TypeVar("pos", bound="Pos")
 
 
 class ParseError(Exception):
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
+    pass
 
 
 class Pos:
@@ -27,13 +26,15 @@ class Pos:
 
 
 class Options:
+
+    width: int
+    height: int
+    entry: Pos
+    exit: Pos
+    output_file: str
+    perfect: bool
+
     def __init__(self) -> None:
-        self.width: int
-        self.height: int
-        self.entry: Pos
-        self.exit: Pos
-        self.output_file: str
-        self.perfect: bool
         self.seed: int = randint(0, 999_999_999)
         self.algorithm: str = "DFS"
         self.interface: str = "gui"
@@ -42,18 +43,15 @@ class Options:
         return str(self.__dict__)
 
     def check(self) -> None:
-        if self.width is None:
-            raise ParseError("Missing mandatory key: Width")
-        if self.height is None:
-            raise ParseError("Missing mandatory key: Height")
-        if self.entry is None:
-            raise ParseError("Missing mandatory key: Entry")
-        if self.exit is None:
-            raise ParseError("Missing mandatory key: Exit")
-        if self.output_file is None:
-            raise ParseError("Missing mandatory key: Output_file")
-        if self.perfect is None:
-            raise ParseError("Missing mandatory key: Perfect")
+        try:
+            self.width
+            self.height
+            self.entry
+            self.exit
+            self.output_file
+            self.perfect
+        except AttributeError:
+            raise ParseError("Missing mandatory key: check config file")
         if self.width < 9:
             raise ValueError("Invalid Width (Width > 8)")
         if self.height < 7:
@@ -69,52 +67,43 @@ class Options:
 
     def add_option(self, key: str, value: str) -> None:
         value = value.strip()
-        match key.lower().strip():
-            case "width":
+        key = key.lower().strip()
+        match key:
+            case "width" | "height" | "seed":
                 try:
-                    width = int(value)
+                    int_value = int(value)
                 except ValueError:
-                    raise ValueError("Width must be an int value")
-                self.width = width
-            case "height":
+                    raise ValueError(
+                        f"{key.capitalize()} must be an int value"
+                    )
+                if key == "width":
+                    self.width = int_value
+                elif key == "height":
+                    self.height = int_value
+                else:
+                    self.seed = int_value
+            case "entry" | "exit":
                 try:
-                    height = int(value)
+                    tpl = Pos.from_string(value)
                 except ValueError:
-                    raise ValueError("Height must be an int value")
-                self.height = height
-            case "entry":
-                try:
-                    entry = Pos.from_string(value)
-                except ValueError:
-                    raise ValueError("Entry must be a Pos value (ex: x,y)")
-                self.entry = entry
-            case "exit":
-                try:
-                    exit = Pos.from_string(value)
-                except ValueError:
-                    raise ValueError("Exit must be a Pos value (ex: x,y)")
-                self.exit = exit
+                    raise ValueError("Entry must be a Pos value (ex: x,y) int")
+                if key == "entry":
+                    self.entry = tpl
+                else:
+                    self.exit = tpl
             case "output_file":
                 self.output_file = value
             case "perfect":
-                if value == 'True':
-                    self.perfect = True
-                elif value == 'False':
-                    self.perfect = False
+                if value in {'True', 'False'}:
+                    self.perfect = True if value == 'True' else False
                 else:
                     raise ValueError("Perfect must be a True or False")
-            case "seed":
-                try:
-                    seed = int(value)
-                except ValueError:
-                    raise ValueError("Seed must be an int value")
-                self.seed = seed
             case "algorithm":
-                if value not in ['DFS', 'PRIM']:
+                if value not in {'DFS', 'PRIM'}:
                     raise ValueError("Algorithm must be DFS or PRIM")
                 self.algorithm = value
             case "interface":
-                if value not in ['gui', 'tui']:
+                if value not in {'gui', 'tui'}:
                     raise ValueError("Interface must be gui or tui")
                 self.interface = value
 
@@ -135,7 +124,7 @@ class Parser:
         options = Options()
         lines = Parser._get_lines(file_path)
         for line in lines:
-            if not line or line[0] == '#':
+            if not line or line.lstrip().startswith('#'):
                 continue
             try:
                 op = line.index('=')
