@@ -325,7 +325,7 @@ class Renderer:
         spacing = available_width // (num_items + 1) if num_items > 0 else 0
 
         for i, item in enumerate(info_items):
-            x_pos = self.border + spacing * (i + 1) - 50
+            x_pos = self.border + spacing * (i + 1) - 23
             y_button = self.border
             y_text = self.border + item['text_offset_y']
             item['button'].put_to_win(self._window, x_pos, y_button)
