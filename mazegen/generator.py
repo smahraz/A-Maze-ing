@@ -43,7 +43,12 @@ class MazeGenerator:
                 self.perfect,
                 Random(self.seed)
             )
-        return PRIM(self.maze, save_step, Random(self.seed))
+        return PRIM(
+                self.maze,
+                save_step,
+                self.perfect,
+                Random(self.seed)
+            )
 
     @staticmethod
     def generate_path(maze: Maze) -> list[tuple[Cell, str]]:

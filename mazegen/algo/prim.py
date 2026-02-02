@@ -43,7 +43,48 @@ def connect_cells(cell: Cell, maze: set[Cell], rng: Random) -> str:
     return wall
 
 
-def PRIM(map: Maze, save_step: bool, rng: Random) -> tuple[Maze, list[Step]]:
+def _open_wall_random(
+        cell: Cell,
+        should_not_touch: set[Cell | None],
+        wall_int: int
+) -> tuple[Cell | None, str | None]:
+    walls = (
+        (cell.above_cell, cell.north),
+        (cell.right_cell, cell.east),
+        (cell.below_cell, cell.south),
+        (cell.left_cell, cell.west)
+    )
+
+    next_cell, wall = walls[wall_int]
+    if next_cell is None or\
+            next_cell.is_protected or\
+            cell.is_protected or\
+            cell in should_not_touch or\
+            not wall.is_closed:
+        return None, None
+    wall.open()
+    return next_cell, ["N", "E", "S", "W"][wall_int]
+
+
+def _break_random(map: Maze, r: Random) -> list[Step]:
+    steps: list[Step] = []
+    random_cells = map.height * map.width * 0.1
+    should_not_touch: set[Cell | None] = set()
+    while len(steps) < random_cells:
+        cl = map.map[r.randint(0, map.height - 1)][r.randint(0, map.width - 1)]
+        cell, wall = _open_wall_random(cl, should_not_touch, r.randint(0, 3))
+        if cell:
+            steps.append(Step(cl.x, cl.y, wall))
+            should_not_touch.add(cell)
+            should_not_touch.add(cell.above_cell)
+            should_not_touch.add(cell.below_cell)
+            should_not_touch.add(cell.right_cell)
+            should_not_touch.add(cell.left_cell)
+    return steps
+
+
+def PRIM(map: Maze, save_step: bool, perfect: bool, rng: Random
+         ) -> tuple[Maze, list[Step]]:
     pool: dict[Cell, None] = {}
     maze: set[Cell] = set()
     frontier: dict[Cell, None] = {}
@@ -77,5 +118,10 @@ def PRIM(map: Maze, save_step: bool, rng: Random) -> tuple[Maze, list[Step]]:
             if neighbour in pool:
                 frontier[neighbour] = None
                 del pool[neighbour]
+
+    if not perfect:
+        random_break_steps = _break_random(map, rng)
+        if save_step:
+            steps.extend(random_break_steps)
 
     return map, steps
