@@ -3,6 +3,13 @@ from ._color import Color
 
 
 class Frame:
+    """
+    Utility class to render a maze in the terminal using ASCII and ANSI colors.
+
+    This class provides static methods to draw a maze, clear the screen,
+    and handle the visual rendering of cells, walls, paths, and cursors.
+    All methods are static since no instance state is required.
+    """
     @staticmethod
     def draw(
             maze: Maze,
@@ -10,6 +17,21 @@ class Frame:
             path_cell: set[Cell] = set(),
             cursors: list[Cell] = []
     ) -> None:
+        """
+        Draw the given maze in the terminal.
+
+        The maze is rendered with walls, visited cells, path cells,
+        entry/exit markers, and optional cursors.
+
+        Args:
+            maze (Maze): The maze to render.
+            visited (set[Cell], optional): Cells that have been visited.
+            Defaults to empty set.
+            path_cell (set[Cell], optional): Cells that are part of the path.
+            Defaults to empty set.
+            cursors (list[Cell], optional): Cells representing cursors or
+            highlights. Defaults to empty list.
+        """
         print("\033[H", end="")
         for row in maze.map:
             if not row[0].above_cell:
@@ -25,6 +47,9 @@ class Frame:
 
     @staticmethod
     def clear() -> None:
+        """
+        Clear the terminal screen.
+        """
         print("\033[2J", end="")
 
     @staticmethod

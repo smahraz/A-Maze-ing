@@ -2,16 +2,27 @@ from typing import Callable, Generator
 
 
 class MazeError(Exception):
+    """
+    Just a custom error i can specificlly Catch.
+    """
     pass
 
 
 class _Wall:
+    """
+    Represent a single wall, shared between two linked cells.
+
+    Can be opened, and protected.
+
+    Methods:
+        open(): Open a closed wall.
+    """
     id = 0
 
     def __init__(self) -> None:
         self.id = self.__class__.id
         self.is_closed = True
-        self.new_id()
+        self._new_id()
         self.is_protected: bool = False
 
     def __str__(self) -> str:
@@ -21,11 +32,26 @@ class _Wall:
         self.is_closed = False
 
     @classmethod
-    def new_id(cls) -> None:
+    def _new_id(cls) -> None:
         cls.id += 1
 
 
 class Cell:
+    """
+    Represent a single cell in a Maze.
+
+    A cell is identified by its x and y coordinates and can be linked
+    to neighboring cells horizontally or vertically.
+
+    Attributes:
+        x (int): The x coordinate of the cell.
+        y (int): The y coordinate of the cell.
+
+    Methods:
+        next_in_row(): Return or link to the neighboring cell in the same row.
+        next_in_column(): Return or link to the neighboring cell in the same
+            column.
+    """
     def __init__(self, x: int, y: int) -> None:
         self.west = _Wall()
         self.east = _Wall()
@@ -55,16 +81,37 @@ class Cell:
         return self.__str__()
 
     def next_in_row(self, other: "Cell") -> None:
+        """
+        Link this cell to a neighboring cell in the same row.
+
+        This method connects the current cell with the given cell
+        horizontally, setting the appropriate east/west.
+
+        Args:
+            other (Cell): The neighboring cell to link with.
+        """
         self.east = other.west
         self.right_cell = other
         other.left_cell = self
 
     def next_in_column(self, other: "Cell") -> None:
+        """
+        Link this cell to a neighboring cell in the same column.
+
+        This method connects the current cell with the given cell
+        vertically, setting the appropriate north/south.
+
+        Args:
+            other (Cell): The neighboring cell to link with.
+        """
         self.south = other.north
         self.below_cell = other
         other.above_cell = self
 
     def protect(self) -> None:
+        """
+        Protect a Cell and its wall, preventing opening a wall by mistake.
+        """
         self.west.is_protected = True
         self.south.is_protected = True
         self.north.is_protected = True
@@ -73,7 +120,14 @@ class Cell:
 
 
 class Maze:
+    """
+    Represent a rectangular maze composed of interconnected cells.
 
+    The maze is stored as a two-dimensional grid of cells. Each cell
+    has four walls (north, east, south, and west) that can be opened
+    or closed to create paths. The maze supports iteration over all
+    cells, wall manipulation, and encoding to a compact string form.
+    """
     entry: Cell
     exit: Cell
 
@@ -123,22 +177,37 @@ class Maze:
             )
 
     def open_north(self, x: int, y: int) -> None:
+        """Open the north wall of the cell at (x, y)."""
         assert not self.map[y][x].north.is_protected, "the wall is protected"
         self.map[y][x].north.open()
 
     def open_south(self, x: int, y: int) -> None:
+        """Open the south wall of the cell at (x, y)."""
         assert not self.map[y][x].south.is_protected, "the wall is protected"
         self.map[y][x].south.open()
 
     def open_west(self, x: int, y: int) -> None:
+        """Open the west wall of the cell at (x, y)."""
         assert not self.map[y][x].west.is_protected, "the wall is protected"
         self.map[y][x].west.open()
 
     def open_east(self, x: int, y: int) -> None:
+        """Open the east wall of the cell at (x, y)."""
         assert not self.map[y][x].east.is_protected, "the wall is protected"
         self.map[y][x].east.open()
 
     def encode(self) -> str:
+        """
+        Encode the maze layout as a hexadecimal string.
+
+        Each cell is encoded as a single hexadecimal digit derived from
+        the open or closed state of its four walls. The bits are assigned
+        in the following order: north (bit 0), east (bit 1), south (bit 2),
+        and west (bit 3). Rows are separated by newline characters.
+
+        Returns:
+            str: A newline-separated hexadecimal representation of the maze.
+        """
         output_ = ""
         for row in self.map:
             for cell in row:
@@ -155,11 +224,36 @@ class Maze:
         self.map[y][x].protect()
 
     def cell_iterator(self) -> Generator[Cell, None, None]:
+        """
+        Yield all cells in the map.
+
+        This iterator walks through the map row by row and yields
+        each cell in turn.
+
+        Yields:
+            Cell: The next cell in the map.
+        """
         for row in self.map:
             for cell in row:
                 yield cell
 
     def apply_step(self, x: int, y: int, wall: str | None) -> "Maze":
+        """
+        Apply a step to the maze by opening a wall at the given position.
+
+        Depending on the value of ``wall``, this method opens the
+        corresponding wall (west, east, north, or south) of the cell
+        at coordinates ``(x, y)``.
+
+        Args:
+            x (int): The x coordinate of the cell.
+            y (int): The y coordinate of the cell.
+            wall (str | None): The wall to open. Valid values are
+                ``'W'``, ``'E'``, ``'N'``, ``'S'``, or ``None``.
+
+        Returns:
+            Maze: The maze instance, allowing method chaining.
+        """
         match wall:
             case 'W':
                 self.open_west(x, y)

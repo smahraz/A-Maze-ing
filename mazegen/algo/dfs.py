@@ -75,7 +75,24 @@ def DFS(
         perfect: bool,
         rng: Random,
 ) -> tuple[Maze, list[Step]]:
+    """
+    Generate a maze using a depth-first search algorithm.
 
+    This function performs a depth-first traversal of the maze,
+    opening walls to create paths. It can optionally save each
+    step of the generation process and produce a perfect or
+    imperfect maze.
+
+    Args:
+        map (Maze): The maze to generate.
+        save_step (bool): Whether to record each step in a list.
+        perfect (bool): If True, the maze will have no loops.
+        rng (Random): Random number generator for path selection.
+
+    Returns:
+        tuple[Maze, list[Step]]: The generated maze and a list of
+        steps taken if `save_step` is True; otherwise, an empty list.
+    """
     stack: list[Cell] = []
     visited = set()
     steps = []

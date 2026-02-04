@@ -6,6 +6,17 @@ from time import sleep
 
 
 class Tui:
+    """
+    Terminal-based interface (TUI) for interacting with a maze generator.
+
+    This class allows visualizing maze generation and solution paths
+    in the terminal using ASCII/ANSI graphics. It supports animation,
+    showing solution paths, reseeding, and color changes.
+
+    Attributes:
+        show_path (bool): Whether to display the solution path.
+        animation (bool): Whether animations are enabled.
+    """
 
     show_path: bool
 
@@ -20,6 +31,13 @@ class Tui:
         self._write_output = write_output
 
     def animate(self) -> None:
+        """
+        Animate the maze generation step by step in the terminal.
+
+        Displays the cells as they are generated with a short delay
+        between steps. Highlights recently visited cells and updates
+        the terminal output dynamically.
+        """
         steps = self.mazegen.generate_steps()
 
         passed_by = set()
@@ -48,6 +66,19 @@ class Tui:
         Frame.draw(maze)
 
     def display(self, path: set[Cell] = set(), animate: bool = False) -> None:
+        """
+        Display the maze in the terminal.
+
+        Depending on the configuration and parameters, this method can
+        display the solution path, animate the generation, or simply
+        render the current maze.
+
+        Args:
+            path (set[Cell], optional): Cells to highlight as the solution path
+                Defaults to empty set.
+            animate (bool, optional): Whether to animate the generation steps.
+                Defaults to False.
+        """
         if self.show_path or path:
             Frame.clear()
             if not self.show_path:
@@ -60,6 +91,16 @@ class Tui:
             Frame.draw(self.mazegen.maze)
 
     def run(self) -> None:
+        """
+        Run the terminal interface, handling user input and updating display.
+
+        Provides an interactive loop where the user can:
+        - Reseed and regenerate the maze
+        - Change colors
+        - Toggle animation
+        - Show or hide the solution path
+        - Exit the interface
+        """
         Frame.clear()
         Frame.draw(self.mazegen.generate_maze())
         self._print_options()
