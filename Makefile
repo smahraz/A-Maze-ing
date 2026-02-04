@@ -3,10 +3,6 @@ NAME = a_maze_ing.py
 CONFIG_FILE = default_config.txt
 
 
-build:
-	@uv build
-
-
 run:
 	@python3 $(NAME) $(CONFIG_FILE)
 
@@ -30,6 +26,9 @@ lint-strict:
 	python3 -m mypy . --strict
 	python3 -m flake8 . --exclude .venv
 
+
+build:
+	@uv build
 
 
 clean:
