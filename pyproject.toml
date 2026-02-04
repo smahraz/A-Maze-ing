@@ -1,8 +1,8 @@
 [project]
 name = "mazegen"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
+description = "A maze generator"
+readme = "README-mazegen.md"
 requires-python = ">=3.10"
 dependencies = []
 
