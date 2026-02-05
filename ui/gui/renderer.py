@@ -204,13 +204,13 @@ class Renderer:
             self.render_corner(cell, 'NW', self._wall_color)
             self.render_corner(cell, 'SE', self._wall_color)
             self.render_corner(cell, 'SW', self._wall_color)
-            if cell.above_cell.is_protected:
+            if cell.above_cell and cell.above_cell.is_protected:
                 self.render_wall(cell, 'N', self._pattern_color)
-            if cell.below_cell.is_protected:
+            if cell.below_cell and cell.below_cell.is_protected:
                 self.render_wall(cell, 'S', self._pattern_color)
-            if cell.right_cell.is_protected:
+            if cell.right_cell and cell.right_cell.is_protected:
                 self.render_wall(cell, 'E', self._pattern_color)
-            if cell.left_cell.is_protected:
+            if cell.left_cell and cell.left_cell.is_protected:
                 self.render_wall(cell, 'W', self._pattern_color)
 
     def render_cell(self, cell: Cell) -> None:
@@ -351,7 +351,8 @@ class Renderer:
             self.render_cursor(cursor, clear=True)
         self.cursors = []
 
-    def render_path(self, path: list[tuple[Cell, str]], clear=False) -> None:
+    def render_path(
+            self, path: list[tuple[Cell, str]], clear: bool = False) -> None:
         color = self._bg_color if clear else self._path_color
         for cell, dir in path:
             if cell != self.maze.entry:

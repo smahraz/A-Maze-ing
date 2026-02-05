@@ -1,25 +1,26 @@
 from mazegen import Maze, Cell
+from typing import Optional
 
 
 class PathCell:
-    def __init__(self, cell: Cell, parent=None):
+    def __init__(self, cell: Cell, parent: Optional["PathCell"] = None):
         self.cell = cell
         self.parent = parent
 
 
-def _get_neighbours(cell: PathCell, visited: set[PathCell]) -> list[PathCell]:
+def _get_neighbours(cell: PathCell, visited: set[Cell]) -> list[PathCell]:
     neighbours: list[PathCell] = []
     if not cell.cell.north.is_closed:
-        if cell.cell.above_cell not in visited:
+        if cell.cell.above_cell and cell.cell.above_cell not in visited:
             neighbours.append(PathCell(cell.cell.above_cell, cell))
     if not cell.cell.south.is_closed:
-        if cell.cell.below_cell not in visited:
+        if cell.cell.below_cell and cell.cell.below_cell not in visited:
             neighbours.append(PathCell(cell.cell.below_cell, cell))
     if not cell.cell.east.is_closed:
-        if cell.cell.right_cell not in visited:
+        if cell.cell.right_cell and cell.cell.right_cell not in visited:
             neighbours.append(PathCell(cell.cell.right_cell, cell))
     if not cell.cell.west.is_closed:
-        if cell.cell.left_cell not in visited:
+        if cell.cell.left_cell and cell.cell.left_cell not in visited:
             neighbours.append(PathCell(cell.cell.left_cell, cell))
     return neighbours
 

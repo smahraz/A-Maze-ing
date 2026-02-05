@@ -30,7 +30,7 @@ OUTPUT_FILE=maze.txt
 
 # Perfect maze generation (True = no loops or isolated areas, one solution path)
 # Set to False for mazes with multiple paths or dead-end loops
-PERFECT=True
+PERFECT=False
 
 ##################################################
 ## Optional settings                            ##
@@ -51,4 +51,4 @@ SEED=1234567
 # Options:
 #   gui - Graphical interface [default]
 #   tui - Text-based terminal interface
-INTERFACE=tui
+INTERFACE=gui
