@@ -15,22 +15,24 @@
 ## Mandatory settings                           ##
 ##################################################
 
-# Maze dimensions (must be positive integers)
+# Maze dimensions
+# WIDTH must be greater than 8
+# HEIGHT must be greater than 6
 WIDTH=25
 HEIGHT=15
 
 # Starting position (format: x,y where 0,0 is top-left corner)
-ENTRY=10,10
+ENTRY=0,0
 
 # Ending position (format: x,y)
-EXIT=1,1
+EXIT=24,14
 
 # Path where the generated maze will be saved
 OUTPUT_FILE=maze.txt
 
 # Perfect maze generation (True = no loops or isolated areas, one solution path)
-# Set to False for mazes with multiple paths or dead-end loops
-PERFECT=False
+# Set to False for mazes with multiple paths
+PERFECT=True
 
 ##################################################
 ## Optional settings                            ##
@@ -39,16 +41,16 @@ PERFECT=False
 # Random seed for reproducible maze generation
 # Uncomment and set to any integer for consistent results across runs
 # Leave commented for a different maze each time
-SEED=1234567
+#SEED=1234567
 
 # Maze generation algorithm
 # Options:
 #   DFS (Depth-First Search) - Creates long, winding passages [default]
 #   PRIM (Prim's algorithm) - Creates more uniform, branching patterns
-#ALGORITHM=DFS
+#ALGORITHM=PRIM
 
 # User interface mode
 # Options:
 #   gui - Graphical interface [default]
 #   tui - Text-based terminal interface
-INTERFACE=gui
+#INTERFACE=tui
