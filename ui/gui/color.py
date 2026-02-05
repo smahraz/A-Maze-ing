@@ -1,7 +1,4 @@
 from random import randint
-from typing import TypeVar, Type
-
-T = TypeVar("T", bound="Color")
 
 
 class Color:
@@ -65,7 +62,7 @@ class Color:
         return self._little
 
     @classmethod
-    def get_random(cls: Type[T]) -> T:
+    def get_random(cls) -> "Color":
         """
         Generate a random color.
 
