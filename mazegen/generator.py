@@ -124,8 +124,8 @@ class MazeGenerator:
         return (
             self.maze.encode() +
             "\n\n" +
-            f"{self.maze.entry.x},{self.maze.entry.x}\n" +
-            f"{self.maze.exit.x},{self.maze.exit.x}\n" +
+            f"{self.maze.entry.x},{self.maze.entry.y}\n" +
+            f"{self.maze.exit.x},{self.maze.exit.y}\n" +
             "".join(_[1] for _ in self.generate_path(self.maze)) +
             "\n"
         )
