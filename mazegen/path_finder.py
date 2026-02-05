@@ -3,12 +3,46 @@ from typing import Optional
 
 
 class PathCell:
+    """
+    Wrapper for a cell used in pathfinding.
+
+    This class associates a maze cell with its parent in the
+    search tree, allowing the path to be reconstructed once
+    the exit is found.
+
+    Attributes:
+        cell (Cell): The wrapped maze cell.
+        parent (PathCell | None): The parent cell in the search path.
+    """
+
     def __init__(self, cell: Cell, parent: Optional["PathCell"] = None):
+        """
+        Initialize a PathCell.
+
+        Args:
+            cell (Cell): The maze cell to wrap.
+            parent (PathCell, optional): The parent cell in the path.
+                Defaults to None.
+        """
         self.cell = cell
         self.parent = parent
 
 
 def _get_neighbours(cell: PathCell, visited: set[Cell]) -> list[PathCell]:
+    """
+    Get all unvisited reachable neighbours of a cell.
+
+    This function examines the four cardinal directions and returns
+    PathCell wrappers for neighbours that can be reached (wall is open)
+    and have not yet been visited.
+
+    Args:
+        cell (PathCell): The current cell to find neighbours for.
+        visited (set[Cell]): Set of already visited cells.
+
+    Returns:
+        list[PathCell]: List of reachable, unvisited neighbour cells.
+    """
     neighbours: list[PathCell] = []
     if not cell.cell.north.is_closed:
         if cell.cell.above_cell and cell.cell.above_cell not in visited:
@@ -26,6 +60,19 @@ def _get_neighbours(cell: PathCell, visited: set[Cell]) -> list[PathCell]:
 
 
 def _get_path(cell: PathCell) -> list[tuple[Cell, str]]:
+    """
+    Reconstruct the path from the exit back to the entry.
+
+    This function traces back through parent references to build
+    the path, recording the direction taken at each step.
+
+    Args:
+        cell (PathCell): The exit cell from which to trace back.
+
+    Returns:
+        list[tuple[Cell, str]]: A list of tuples containing each cell
+        and the direction taken from that cell.
+    """
     path: list[tuple[Cell, str]] = []
 
     while cell.parent:
@@ -46,6 +93,21 @@ def _get_path(cell: PathCell) -> list[tuple[Cell, str]]:
 
 
 def path_finder(maze: Maze) -> list[tuple[Cell, str]]:
+    """
+    Find a path through the maze from entry to exit.
+
+    This function uses a breadth-first search algorithm to find
+    a path from the maze entry to the exit. It returns the path
+    as a list of cells with their corresponding movement directions.
+
+    Args:
+        maze (Maze): The maze to find a path through.
+
+    Returns:
+        list[tuple[Cell, str]]: A list of tuples where each tuple
+        contains a cell and the direction taken from that cell.
+        Returns an empty list if no path exists.
+    """
     entry = PathCell(maze.entry)
     exit_cell = maze.exit
 

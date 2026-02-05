@@ -1,3 +1,10 @@
+"""
+A-Maze-ing: A maze generation and visualization application.
+
+This module provides the entry point for the A-Maze-ing application,
+which generates mazes using DFS or Prim's algorithm and displays
+them in either a graphical (GUI) or terminal (TUI) interface.
+"""
 from parser import Parser
 from sys import argv
 from mazegen import MazeGenerator, MazeError
@@ -5,6 +12,15 @@ from ui import Gui, Tui
 
 
 def write_output(output: str) -> None:
+    """
+    Write the maze output to the configured output file.
+
+    Args:
+        output (str): The maze data to write.
+
+    Note:
+        Exits the program with code 1 if the file cannot be written.
+    """
     try:
         with open(output_path, 'w') as file:
             file.write(output)
