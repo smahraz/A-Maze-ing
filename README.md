@@ -52,7 +52,7 @@ The project is structured as a modular application with a reusable maze generati
 ### Requirements
 
 - Python 3.10 or higher
-- [uv](https://github.com/astral-sh/uv) package manager (recommended)
+- Minilibx (mlx-*.whl)
 
 ### Installation
 
@@ -65,12 +65,6 @@ cd A-Maze-ing
 2. Install dependencies:
 ```bash
 make install
-```
-
-Or manually:
-```bash
-uv sync
-uv pip install mlx-*.whl
 ```
 
 ### Usage
