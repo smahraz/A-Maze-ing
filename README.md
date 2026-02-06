@@ -157,42 +157,124 @@ We implemented both to give users flexibility based on their preferences and use
 
 ---
 
-## Reusable Components
+## mazegen Library
 
-### mazegen Library
+The `mazegen/` module is a standalone, reusable maze generation library with **no external dependencies**. It can be installed and used independently in any Python project.
 
-The `mazegen/` module is a standalone, reusable maze generation library with no external dependencies. It can be installed separately via pip:
+### Installation
 
 ```bash
 pip install mazegen-*.whl
 ```
 
-#### Basic Usage
+### Quick Start
 
 ```python
 from mazegen import MazeGenerator
 
-mazegen = MazeGenerator(
-    width=20,
-    height=10,
-    algorithm="DFS",
-    perfect=True,
-    seed=42,
-    entry=(0, 0),
-    exit=(19, 9)
-)
+# Create and generate a maze
+gen = MazeGenerator(width=20, height=10, algorithm="DFS", perfect=True, seed=42, entry=(0, 0), exit=(19, 9))
+maze = gen.generate_maze()
 
-maze = mazegen.generate_maze()
+# Find solution path
+path = MazeGenerator.generate_path(maze)
+print("Solution:", "".join(direction for _, direction in path))
 ```
 
-#### Available Features
+### Constructor Parameters
 
-- `generate_maze()` - Generate a maze
-- `generate()` - Generate maze with step-by-step data for animation
-- `generate_steps()` - Get only the generation steps
-- Access to the 2D cell grid via `mazegen.maze.map`
+```python
+MazeGenerator(
+    width: int,          # Maze width (columns)
+    height: int,         # Maze height (rows)
+    algorithm: str,      # "DFS" or "PRIM"
+    perfect: bool,       # True = no loops, False = some extra passages
+    seed: int,           # Random seed for reproducibility
+    entry: tuple[int, int],  # Starting cell (x, y)
+    exit: tuple[int, int]    # Ending cell (x, y)
+)
+```
 
-See [README-mazegen.md](README-mazegen.md) for full documentation.
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `width` | `int` | Number of columns (must be > 0) |
+| `height` | `int` | Number of rows (must be > 0) |
+| `algorithm` | `str` | Generation algorithm: `"DFS"` or `"PRIM"` |
+| `perfect` | `bool` | `True` for single-solution maze, `False` for additional openings |
+| `seed` | `int` | Random seed for reproducible generation |
+| `entry` | `tuple[int, int]` | Entry coordinates `(x, y)` |
+| `exit` | `tuple[int, int]` | Exit coordinates `(x, y)` |
+
+### Accessing the Generated Structure
+
+```python
+from mazegen import MazeGenerator
+
+gen = MazeGenerator(width=10, height=8, algorithm="DFS", perfect=True, seed=123, entry=(0, 0), exit=(9, 7))
+maze = gen.generate_maze()
+
+# Access the 2D grid of cells
+grid = maze.map  # list[list[Cell]]
+
+# Access specific cell
+cell = grid[y][x]
+
+# Check wall states
+print(f"North wall closed: {cell.north.is_closed}")
+print(f"East wall closed: {cell.east.is_closed}")
+
+# Access neighbors
+north_cell = cell.above_cell  # Cell or None
+south_cell = cell.below_cell
+east_cell = cell.right_cell
+west_cell = cell.left_cell
+```
+
+### Finding the Solution Path
+
+```python
+from mazegen import MazeGenerator
+
+gen = MazeGenerator(width=20, height=15, algorithm="DFS", perfect=True, seed=42, entry=(0, 0), exit=(19, 14))
+maze = gen.generate_maze()
+
+# Get solution path (list of (Cell, direction) tuples)
+path = MazeGenerator.generate_path(maze)
+
+# Directions: 'N' (north), 'S' (south), 'E' (east), 'W' (west)
+for cell, direction in path:
+    print(f"From ({cell.x}, {cell.y}) go {direction}")
+
+# Get solution as direction string
+solution = "".join(direction for _, direction in path)
+print(f"Solution: {solution}")
+```
+
+### Generation with Animation Steps
+
+```python
+from mazegen import MazeGenerator
+
+gen = MazeGenerator(width=10, height=10, algorithm="DFS", perfect=True, seed=123, entry=(0, 0), exit=(9, 9))
+
+# Get maze and steps for animation
+maze, steps = gen.generate()
+
+# Each step contains: x, y, wall (direction opened)
+for step in steps:
+    print(f"Step at ({step.x}, {step.y}), opened wall: {step.wall}")
+```
+
+### Available Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `generate_maze()` | `Maze` | Generate maze without recording steps |
+| `generate()` | `tuple[Maze, list[Step]]` | Generate maze with animation steps |
+| `generate_steps()` | `list[Step]` | Generate and return only the steps |
+| `generate_path(maze)` | `list[tuple[Cell, str]]` | Static method - find path from entry to exit |
+| `output()` | `str` | Export maze as encoded string with solution |
+| `reseed()` | `None` | Assign a new random seed |
 
 ---
 
