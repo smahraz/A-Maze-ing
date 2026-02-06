@@ -42,7 +42,8 @@ class Gui:
         path (bool): Whether path display is enabled.
     """
 
-    def __init__(self, maze_gen: MazeGenerator, write_output: Callable):
+    def __init__(self, maze_gen: MazeGenerator,
+                 write_output: Callable[[str], None]):
         """
         Initialize the GUI with a maze generator.
 
