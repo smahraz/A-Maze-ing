@@ -8,9 +8,7 @@ run:
 
 
 install:
-	@uv sync
-	@uv pip install mlx-*.whl
-
+	pip install mlx-*.whl
 
 
 debug:
@@ -18,22 +16,17 @@ debug:
 
 
 lint:
-	python3 -m mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
-	python3 -m flake8 . --exclude .venv
-
-
-lint-strict:
-	python3 -m mypy . --strict
-	python3 -m flake8 . --exclude .venv
-
+	flake8 .
+	mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 build:
-	@uv build
+	@python3 -m pip install --quiet --upgrade build
+	@python3 -m build
 
 
 clean:
-	rm -vrf **/__pycache__/
+	rm -vrf */__pycache__ */*/__pycache__
 	rm -vrf .mypy_cache
 
 
-PHONY: install run debug lint-strict lint build
+.PHONY: install run debug lint build clean

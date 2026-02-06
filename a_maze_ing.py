@@ -31,7 +31,7 @@ def write_output(output: str) -> None:
 
 if __name__ == "__main__":
     if len(argv) != 2:
-        print(f"Usage: puthon3 {argv[0]} <config_file>")
+        print(f"Usage: python3 {argv[0]} <config_file>")
         exit(1)
     try:
         config_file = argv[1]
