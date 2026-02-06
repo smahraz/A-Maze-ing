@@ -186,6 +186,8 @@ class Options:
                 if value not in {'gui', 'tui'}:
                     raise ValueError("Interface must be gui or tui")
                 self.interface = value
+            case _:
+                raise ValueError(f"Unknown key: {key}")
 
 
 class Parser:
