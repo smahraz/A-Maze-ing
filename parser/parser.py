@@ -1,7 +1,4 @@
 from random import randint
-from typing import TypeVar, Type
-
-pos = TypeVar("pos", bound="Pos")
 
 
 class ParseError(Exception):
@@ -44,7 +41,7 @@ class Pos:
         return self.__str__()
 
     @classmethod
-    def from_string(cls: Type[pos], s: str) -> pos:
+    def from_string(cls, s: str) -> "Pos":
         """
         Create a Pos instance from a comma-separated string.
 
@@ -174,8 +171,8 @@ class Options:
             case "output_file":
                 self.output_file = value
             case "perfect":
-                if value in {'True', 'False'}:
-                    self.perfect = True if value == 'True' else False
+                if value.lower() in {'true', 'false'}:
+                    self.perfect = True if value.lower() == 'true' else False
                 else:
                     raise ValueError("Perfect must be a True or False")
             case "algorithm":
