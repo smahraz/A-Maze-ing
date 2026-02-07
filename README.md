@@ -58,7 +58,7 @@ The project is structured as a modular application with a reusable maze generati
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/saidmakkass/A-Maze-ing.git
+git clone https://github.com/smahraz/A-Maze-ing.git
 cd A-Maze-ing
 ```
 
@@ -66,7 +66,7 @@ cd A-Maze-ing
 ```bash
 make install
 ```
-
+**Note:** you can find mlx package inside __releases__.
 ### Usage
 
 Run with the default configuration:
