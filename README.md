@@ -62,11 +62,16 @@ git clone https://github.com/smahraz/A-Maze-ing.git
 cd A-Maze-ing
 ```
 
+- create a vertualenv
+```
+python3 -m venv venv
+source venv/bin/activate
+```
+
 2. Install dependencies:
 ```bash
 make install
 ```
-**Note:** you can find mlx package inside __releases__.
 ### Usage
 
 Run with the default configuration:

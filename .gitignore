@@ -11,4 +11,3 @@ wheels/
 venv
 # Test files
 test_*.py
-mlx-*.whl
